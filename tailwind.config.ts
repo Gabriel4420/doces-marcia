@@ -64,6 +64,24 @@ export default {
         cel: { min: "236px", max: "265px" },
         cel2: { min: "266px", max: "767px" },
       },
+      keyframes: {
+        zoomIn: {
+          "0%": { 
+            opacity: "0",
+            transform: "scale(0.3)"
+          },
+          "50%": {
+            opacity: "1"
+          },
+          "100%": {
+            opacity: "1",
+            transform: "scale(1)"
+          }
+        }
+      },
+      animation: {
+        "zoom-in": "zoomIn 2s ease-in-out"
+      }
     },
   },
   plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar")],

@@ -8,15 +8,27 @@ type States = {
 
 type Actions = {
   upsertCartItem: (product: Product, quantity: number) => void;
+  removeCartItem: (productId: string) => void;
+  clearCart: () => void;
 };
 
 const initialState: States = {
   cart: [],
 };
 
-export const useCartStore = create<States & Actions>()((set) => ({
+function isLoggedIn() {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem("isLoggedIn") === "true";
+}
+
+export const useCartStore = create<States & Actions>((set, get) => ({
   ...initialState,
-  upsertCartItem: (product, quantity) =>
+  upsertCartItem: (product, quantity) => {
+    if (!isLoggedIn()) {
+      alert("Você precisa estar logado para adicionar itens ao carrinho.");
+      window.location.href = "/login";
+      return;
+    }
     set((state) => {
       let newCart = state.cart;
 
@@ -38,5 +50,40 @@ export const useCartStore = create<States & Actions>()((set) => ({
       }
 
       return { ...state, cart: newCart };
-    }),
+    });
+  },
+  removeCartItem: (productId) => {
+    if (!isLoggedIn()) {
+      alert("Você precisa estar logado para remover itens do carrinho.");
+      window.location.href = "/login";
+      return;
+    }
+    set((state) => {
+      let newCart = state.cart;
+
+      let productIndex = newCart.findIndex(
+        (item) => item.product.id === productId
+      );
+
+      if (productIndex >= 0) {
+        newCart = newCart.filter((item) => item.product.id !== productId);
+      }
+
+      return { ...state, cart: newCart };
+    });
+  },
+  clearCart: () => {
+    if (!isLoggedIn()) {
+      alert("Você precisa estar logado para limpar o carrinho.");
+      window.location.href = "/login";
+      return;
+    }
+    set((state) => {
+      let newCart = state.cart;
+
+      newCart = [];
+
+      return { ...state, cart: newCart };
+    });
+  },
 }));

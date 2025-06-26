@@ -23,3 +23,14 @@ export const addressFormSchema = z.object({
   city: z.string().min(2, "Preencha a cidade"),
   state: z.string().min(2, "Preencha o estado"),
 });
+
+export const contactFormSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "O nome deve ter pelo menos 3 caracteres" }),
+  email: z.string().email({ message: "Email inválido" }),
+  message: z
+    .string()
+    .min(10, { message: "A mensagem deve ter pelo menos 10 caracteres" })
+    .max(500, { message: "A mensagem deve ter no máximo 500 caracteres" }),
+});

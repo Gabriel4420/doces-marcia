@@ -21,3 +21,12 @@ export type Tab = {
 export type CardProductProperties = {
   item: Product;
 };
+
+export interface CategoryTabProducts {
+  id: number,
+  category: string,
+  image: string,
+  name: string,
+  price: number
+
+}
