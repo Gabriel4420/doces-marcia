@@ -1,70 +1,150 @@
 "use client"
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+
 import { useState } from "react";
-import Link from "next/link";
+import { useAuth } from "@/contexts/auth-context";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ModeToggle } from "@/components/theme-toggle";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [erro, setErro] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { login } = useAuth();
+  const { toast } = useToast();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulação de login (substituir por lógica real)
-    if (email === "teste@teste.com" && senha === "123456") {
-      localStorage.setItem("isLoggedIn", "true");
-      window.location.href = "/";
-    } else {
-      setErro("Email ou senha inválidos");
+    
+    if (!email || !password) {
+      toast({
+        title: "Campos obrigatórios",
+        description: "Por favor, preencha todos os campos.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      await login(email, password);
+      toast({
+        title: "Login realizado!",
+        description: "Bem-vindo de volta!",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro no login",
+        description: "Email ou senha incorretos. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 to-pink-200 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+      {/* Botão flutuante de retorno */}
+      <div className="fixed top-6 left-6 z-50">
+        <Link href="/">
+          <Button variant="outline" size="icon" className="rounded-full shadow-lg border border-gray-200 dark:border-gray-700">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+      </div>
+
       {/* Botão flutuante redondo de tema */}
       <div className="fixed bottom-6 right-6 z-50">
-        <div className="rounded-full shadow-lg bg-white dark:bg-gray-800 p-3 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+        <div className="rounded-full shadow-lg border border-gray-200 dark:border-gray-700">
           <ModeToggle />
         </div>
       </div>
-      <form onSubmit={handleLogin} className="bg-white dark:bg-gray-800 p-8 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-        <div className="mb-4">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-          />
+
+      <form onSubmit={handleLogin} className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-xl shadow-xl w-full max-w-[280px] md:max-w-sm">
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-2">
+            Bem-vindo de volta!
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+            Faça login para acessar sua conta
+          </p>
         </div>
-        <div className="mb-4 relative">
-          <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="Senha"
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
-            required
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-pink-500"
-            tabIndex={-1}
-            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+
+        <div className="space-y-4 md:space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full text-sm md:text-base"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300">
+              Senha
+            </Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Sua senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pr-10 text-sm md:text-base"
+                required
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-full px-3"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 md:py-3 px-4 md:px-6 rounded-lg transition duration-300 text-sm md:text-base"
           >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
+            {isLoading ? "Entrando..." : "Entrar"}
+          </Button>
         </div>
-        {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
-        <Button type="submit" className="w-full mb-2">Entrar</Button>
-        <p className="text-center text-sm mt-4">
-          Não tem uma conta? <Link href="/register" className="text-pink-500 hover:underline">Registre-se</Link>
-        </p>
+
+        <div className="mt-6 md:mt-8 text-center">
+          <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+            Não tem uma conta?{" "}
+            <Link
+              href="/register"
+              className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-300"
+            >
+              Cadastre-se
+            </Link>
+          </p>
+        </div>
       </form>
     </div>
   );

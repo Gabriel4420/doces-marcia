@@ -18,8 +18,8 @@ export const generateMessage = () => {
   }
 
   return `
-    **Olá, ${user.name}!**
-    Aqui está o resumo do seu pedido:
+    **Olá, Delicias da marcia !**
+    Aqui está o resumo do pedido do cliente ${user.name}:
     **Dados do cliente** 
     CPF: ${user.documentId}
     Endereço: ${address.street}, 

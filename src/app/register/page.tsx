@@ -4,104 +4,226 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Link from "next/link";
 import { ModeToggle } from "@/components/theme-toggle";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import { Label } from "@/components/ui/label";
 
-export default function RegisterPage() {
+const RegisterPage = () => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
-  const [erro, setErro] = useState("");
-  const [sucesso, setSucesso] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { register } = useAuth();
+  const { toast } = useToast();
+  const router = useRouter();
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+
     if (senha !== confirmarSenha) {
-      setErro("As senhas não coincidem");
+      toast({
+        title: "Senhas não coincidem ❌",
+        description: "As senhas digitadas não são iguais. Tente novamente.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
       return;
     }
-    // Simulação de registro (substituir por lógica real)
-    setSucesso("Cadastro realizado com sucesso! Faça login.");
-    setErro("");
-    setNome("");
-    setEmail("");
-    setSenha("");
-    setConfirmarSenha("");
+
+    try {
+      const success = await register(nome, email, senha);
+      
+      if (success) {
+        toast({
+          title: "Cadastro realizado com sucesso! 🎉",
+          description: "Sua conta foi criada. Redirecionando para login...",
+          variant: "default",
+        });
+        
+        setNome("");
+        setEmail("");
+        setSenha("");
+        setConfirmarSenha("");
+        
+        // Redirecionar para login após 2 segundos
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
+      } else {
+        toast({
+          title: "Erro no cadastro ❌",
+          description: "Não foi possível criar sua conta. Tente novamente.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erro inesperado ❌",
+        description: "Ocorreu um erro ao criar sua conta. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 to-pink-200 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+      {/* Botão flutuante de retorno */}
+      <div className="fixed top-6 left-6 z-50">
+        <Link href="/">
+          <Button variant="outline" size="icon" className="rounded-full shadow-lg border border-gray-200 dark:border-gray-700">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+      </div>
+
       {/* Botão flutuante redondo de tema */}
       <div className="fixed bottom-6 right-6 z-50">
-        <div className="rounded-full shadow-lg bg-white dark:bg-gray-800 p-3 flex items-center justify-center border border-gray-200 dark:border-gray-700">
+        <div className="rounded-full shadow-lg border border-gray-200 dark:border-gray-700">
           <ModeToggle />
         </div>
       </div>
-      <form onSubmit={handleRegister} className="bg-white dark:bg-gray-800 p-8 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-bold mb-6 text-center">Registro</h2>
-        <div className="mb-4">
-          <Input
-            type="text"
-            placeholder="Nome"
-            value={nome}
-            onChange={e => setNome(e.target.value)}
-            required
-          />
+
+      <form onSubmit={handleRegister} className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-xl shadow-xl w-full max-w-[280px] md:max-w-sm">
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-2">
+            Criar conta
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+            Junte-se à família da Dona Márcia
+          </p>
         </div>
-        <div className="mb-4">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="mb-4 relative">
-          <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="Senha"
-            value={senha}
-            onChange={e => setSenha(e.target.value)}
-            required
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-pink-500"
-            tabIndex={-1}
-            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+
+        <div className="space-y-4 md:space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="nome" className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300">
+              Nome completo
+            </Label>
+            <Input
+              id="nome"
+              type="text"
+              placeholder="Seu nome completo"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              className="w-full text-sm md:text-base"
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full text-sm md:text-base"
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="senha" className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300">
+              Senha
+            </Label>
+            <div className="relative">
+              <Input
+                id="senha"
+                type={showPassword ? "text" : "password"}
+                placeholder="Sua senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                className="w-full pr-10 text-sm md:text-base"
+                required
+                disabled={isLoading}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-full px-3"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                disabled={isLoading}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmarSenha" className="text-sm md:text-base font-medium text-gray-700 dark:text-gray-300">
+              Confirmar senha
+            </Label>
+            <div className="relative">
+              <Input
+                id="confirmarSenha"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirme sua senha"
+                value={confirmarSenha}
+                onChange={(e) => setConfirmarSenha(e.target.value)}
+                className="w-full pr-10 text-sm md:text-base"
+                required
+                disabled={isLoading}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-full px-3"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}
+                disabled={isLoading}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 md:py-3 px-4 md:px-6 rounded-lg transition duration-300 text-sm md:text-base"
           >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
+            {isLoading ? "Criando conta..." : "Criar conta"}
+          </Button>
         </div>
-        <div className="mb-4 relative">
-          <Input
-            type={showConfirmPassword ? "text" : "password"}
-            placeholder="Confirmar Senha"
-            value={confirmarSenha}
-            onChange={e => setConfirmarSenha(e.target.value)}
-            required
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-pink-500"
-            tabIndex={-1}
-            aria-label={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}
-          >
-            {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
+
+        <div className="mt-6 md:mt-8 text-center">
+          <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+            Já tem uma conta?{" "}
+            <Link
+              href="/login"
+              className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-300"
+            >
+              Faça login
+            </Link>
+          </p>
         </div>
-        {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
-        {sucesso && <p className="text-green-500 text-sm mb-4">{sucesso}</p>}
-        <Button type="submit" className="w-full mb-2">Registrar</Button>
-        <p className="text-center text-sm mt-4">
-          Já tem uma conta? <Link href="/login" className="text-pink-500 hover:underline">Faça login</Link>
-        </p>
       </form>
     </div>
   );
-} 
+};
+
+export default RegisterPage; 

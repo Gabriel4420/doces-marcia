@@ -1,14 +1,18 @@
-import { Cart } from "@/types/cart";
-import { Product } from "@/types/product";
 import { create } from "zustand";
+import { Product } from "@/types/product";
 
-type States = {
-  cart: Cart[];
-};
+interface CartItem {
+  product: Product;
+  quantity: number;
+}
+
+interface States {
+  cart: CartItem[];
+}
 
 type Actions = {
   upsertCartItem: (product: Product, quantity: number) => void;
-  removeCartItem: (productId: string) => void;
+  removeCartItem: (productId: number) => void;
   clearCart: () => void;
 };
 
@@ -16,15 +20,21 @@ const initialState: States = {
   cart: [],
 };
 
-function isLoggedIn() {
+// Função para verificar se o usuário está logado usando o contexto
+const checkAuthStatus = (): boolean => {
   if (typeof window === "undefined") return false;
   return localStorage.getItem("isLoggedIn") === "true";
-}
+};
+
+// Função para limpar itens com quantidade zero ou menor
+const cleanCart = (cart: CartItem[]): CartItem[] => {
+  return cart.filter((item) => item.quantity > 0);
+};
 
 export const useCartStore = create<States & Actions>((set, get) => ({
   ...initialState,
   upsertCartItem: (product, quantity) => {
-    if (!isLoggedIn()) {
+    if (!checkAuthStatus()) {
       alert("Você precisa estar logado para adicionar itens ao carrinho.");
       window.location.href = "/login";
       return;
@@ -36,24 +46,20 @@ export const useCartStore = create<States & Actions>((set, get) => ({
         (item) => item.product.id === product.id
       );
 
-      if (productIndex < 0) {
-        newCart.push({ product, quantity: 0 });
-        productIndex = newCart.findIndex(
-          (item) => item.product.id === product.id
-        );
+      if (productIndex >= 0) {
+        newCart[productIndex].quantity += quantity;
+      } else {
+        newCart.push({ product, quantity });
       }
 
-      newCart[productIndex].quantity += quantity;
-
-      if (newCart[productIndex].quantity <= 0) {
-        newCart = newCart.filter((item) => item.product.id !== product.id);
-      }
+      // Limpar itens com quantidade zero ou menor
+      newCart = cleanCart(newCart);
 
       return { ...state, cart: newCart };
     });
   },
-  removeCartItem: (productId) => {
-    if (!isLoggedIn()) {
+  removeCartItem: (productId: number) => {
+    if (!checkAuthStatus()) {
       alert("Você precisa estar logado para remover itens do carrinho.");
       window.location.href = "/login";
       return;
@@ -73,7 +79,7 @@ export const useCartStore = create<States & Actions>((set, get) => ({
     });
   },
   clearCart: () => {
-    if (!isLoggedIn()) {
+    if (!checkAuthStatus()) {
       alert("Você precisa estar logado para limpar o carrinho.");
       window.location.href = "/login";
       return;

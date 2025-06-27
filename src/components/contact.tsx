@@ -49,48 +49,48 @@ const Contact = () => {
   return (
     <section
       id="contato"
-      className="py-16 bg-gradient-to-br from-pink-500 to-pink-600 text-white"
+      className="py-8 md:py-16 bg-gradient-to-br from-pink-500 to-pink-600 text-white"
       role="region"
       aria-labelledby="contact-title"
     >
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 id="contact-title" className="text-3xl md:text-4xl font-bold mb-4">
+      <div className="container mx-auto px-4 max-w-[312px] md:max-w-none">
+        <div className="text-center mb-8 md:mb-12">
+          <h2 id="contact-title" className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4">
             Fale com a <span className="text-white">Dona Márcia</span>
           </h2>
-          <p className="text-lg max-w-2xl mx-auto opacity-90">
+          <p className="text-base md:text-lg max-w-2xl mx-auto opacity-90 px-2">
             Tire suas dúvidas ou faça seu pedido especial
           </p>
         </div>
         
         <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
             {/* Informações de Contato */}
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-              <div className="space-y-8">
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/20">
+              <div className="space-y-6 md:space-y-8">
                 <div>
-                  <h3 className="text-2xl font-bold mb-6 flex items-center">
-                    <MapPin className="w-6 h-6 mr-2" aria-hidden="true" />
+                  <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 flex items-center justify-center md:justify-start">
+                    <MapPin className="w-5 h-5 md:w-6 md:h-6 mr-2" aria-hidden="true" />
                     Informações de Contato
                   </h3>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-3 md:space-y-4">
                     <div className="flex items-start space-x-3">
-                      <MapPin className="w-5 h-5 mt-1 text-pink-200" aria-hidden="true" />
+                      <MapPin className="w-4 h-4 md:w-5 md:h-5 mt-1 text-pink-200" aria-hidden="true" />
                       <div>
-                        <p className="font-medium">Endereço</p>
-                        <p className="text-pink-100">Rua dos Doces, 123 - Centro</p>
-                        <p className="text-pink-100">São Paulo/SP</p>
+                        <p className="font-medium text-sm md:text-base">Endereço</p>
+                        <p className="text-pink-100 text-sm md:text-base">Rua dos Doces, 123 - Centro</p>
+                        <p className="text-pink-100 text-sm md:text-base">São Paulo/SP</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center space-x-3">
-                      <Phone className="w-5 h-5 text-pink-200" aria-hidden="true" />
+                      <Phone className="w-4 h-4 md:w-5 md:h-5 text-pink-200" aria-hidden="true" />
                       <div>
-                        <p className="font-medium">Telefone</p>
+                        <p className="font-medium text-sm md:text-base">Telefone</p>
                         <a
                           href="tel:+5511987654321"
-                          className="text-pink-100 underline focus:outline-none focus:ring-2 focus:ring-pink-300"
+                          className="text-pink-100 underline focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm md:text-base"
                           aria-label="Ligar para (11) 98765-4321"
                           tabIndex={0}
                         >
@@ -100,12 +100,12 @@ const Contact = () => {
                     </div>
                     
                     <div className="flex items-center space-x-3">
-                      <Mail className="w-5 h-5 text-pink-200" aria-hidden="true" />
+                      <Mail className="w-4 h-4 md:w-5 md:h-5 text-pink-200" aria-hidden="true" />
                       <div>
-                        <p className="font-medium">Email</p>
+                        <p className="font-medium text-sm md:text-base">Email</p>
                         <a
                           href="mailto:contato@donamarcia.com.br"
-                          className="text-pink-100 underline focus:outline-none focus:ring-2 focus:ring-pink-300"
+                          className="text-pink-100 underline focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm md:text-base"
                           aria-label="Enviar email para contato@donamarcia.com.br"
                           tabIndex={0}
                         >
@@ -119,21 +119,21 @@ const Contact = () => {
                 <Separator className="bg-white/20" />
                 
                 <div>
-                  <h3 className="text-2xl font-bold mb-6 flex items-center">
-                    <Clock className="w-6 h-6 mr-2" aria-hidden="true" />
+                  <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 flex items-center justify-center md:justify-start">
+                    <Clock className="w-5 h-5 md:w-6 md:h-6 mr-2" aria-hidden="true" />
                     Horário de Atendimento
                   </h3>
                   
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center text-sm md:text-base">
                       <span className="text-pink-100">Segunda a Sexta</span>
                       <span className="font-medium">8h às 18h</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center text-sm md:text-base">
                       <span className="text-pink-100">Sábado</span>
                       <span className="font-medium">9h às 13h</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center text-sm md:text-base">
                       <span className="text-pink-100">Domingo</span>
                       <span className="font-medium text-pink-200">Fechado</span>
                     </div>
@@ -143,25 +143,25 @@ const Contact = () => {
             </div>
             
             {/* Formulário */}
-            <div className="bg-white rounded-2xl p-8 shadow-2xl">
-              <h3 className="text-2xl font-bold text-gray-800 mb-6">
+            <div className="bg-white rounded-2xl p-6 md:p-8 shadow-2xl">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6 text-center md:text-left">
                 Envie sua mensagem
               </h3>
               
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="space-y-6"
+                className="space-y-4 md:space-y-6"
                 aria-label="Formulário de contato"
               >
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-gray-700 font-medium">
+                  <Label htmlFor="name" className="text-gray-700 font-medium text-sm md:text-base">
                     Nome completo
                   </Label>
                   <Input
                     id="name"
                     type="text"
                     placeholder="Digite seu nome"
-                    className="border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                    className="border-gray-300 focus:border-pink-500 focus:ring-pink-500 text-sm md:text-base"
                     aria-required="true"
                     {...register("name")}
                   />
@@ -171,14 +171,14 @@ const Contact = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-700 font-medium">
+                  <Label htmlFor="email" className="text-gray-700 font-medium text-sm md:text-base">
                     Email
                   </Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="seu@email.com"
-                    className="border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                    className="border-gray-300 focus:border-pink-500 focus:ring-pink-500 text-sm md:text-base"
                     aria-required="true"
                     {...register("email")}
                   />
@@ -188,14 +188,14 @@ const Contact = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="message" className="text-gray-700 font-medium">
+                  <Label htmlFor="message" className="text-gray-700 font-medium text-sm md:text-base">
                     Mensagem
                   </Label>
                   <Textarea
                     id="message"
                     placeholder="Digite sua mensagem..."
-                    rows={5}
-                    className="border-gray-300 focus:border-pink-500 focus:ring-pink-500 resize-none"
+                    rows={4}
+                    className="border-gray-300 focus:border-pink-500 focus:ring-pink-500 resize-none text-sm md:text-base"
                     aria-required="true"
                     {...register("message")}
                   />
@@ -207,7 +207,7 @@ const Contact = () => {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center space-x-2"
+                  className="w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 md:py-3 px-4 md:px-6 rounded-lg transition duration-300 flex items-center justify-center space-x-2 text-sm md:text-base"
                   aria-busy={isSubmitting}
                 >
                   {isSubmitting ? (

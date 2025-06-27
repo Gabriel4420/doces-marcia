@@ -1,20 +1,22 @@
 import { useCartStore } from "@/store/cart-store";
-import { Cart } from "@/types/cart";
 import { Button } from "../ui/button";
 import { MinusIcon, PlusIcon } from "lucide-react";
+import { Product } from "@/types/product";
+
+interface CartItem {
+  product: Product;
+  quantity: number;
+}
 
 type Props = {
-  cartItem: Cart;
+  cartItem: CartItem;
 };
 
-export const CartItemQuantity = ({ cartItem }: Props) => {
+const CartItemQuantity = ({ cartItem }: Props) => {
   const { upsertCartItem } = useCartStore((state) => state);
 
   const handleDecreaseQuantity = () => {
     upsertCartItem(cartItem.product, -1);
-    if (cartItem.quantity == 0) {
-      upsertCartItem(cartItem.product, 0);
-    }
   };
 
   return (
@@ -24,20 +26,23 @@ export const CartItemQuantity = ({ cartItem }: Props) => {
         variant="outline"
         size="icon"
         className="size-5"
+        aria-label="Aumentar quantidade"
       >
-        {" "}
-        <PlusIcon className="size-3" />{" "}
+        <PlusIcon className="size-3" />
       </Button>
-      <span>{cartItem.quantity}</span>
+      <span className="min-w-[20px] text-center">{cartItem.quantity}</span>
       <Button
         onClick={handleDecreaseQuantity}
         variant="outline"
         size="icon"
         className="size-5"
+      
+        aria-label="Diminuir quantidade"
       >
-        {" "}
-        <MinusIcon className="size-3" />{" "}
+        <MinusIcon className="size-3" />
       </Button>
     </div>
   );
 };
+
+export { CartItemQuantity };

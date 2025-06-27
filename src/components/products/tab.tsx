@@ -1,42 +1,51 @@
-import { TabsList } from "@radix-ui/react-tabs";
-import { Tabs, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import { tabs } from "@/helpers/queryTabProducts";
+"use client";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getTabs } from "@/helpers/queryTabProducts";
 import { ErrorHandler } from "@/helpers/errorHandlers";
 import { ProductItem } from "./card-product-item";
-import { CategoryTabProducts, Tab } from "@/types/product";
+import { useEffect, useState } from "react";
 
-export const ProductsTab = async () => {
+export const ProductsTab = () => {
+  const [tabs, setTabs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getTabs().then((data) => {
+      setTabs(data);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return <div className="w-full max-w-6xl mx-auto px-4 py-10 text-center">Carregando produtos...</div>;
+  }
+
   return (
-    <Tabs defaultValue="sushi">
-      <TabsList className="flex gap-2">
-        {tabs.map((item) => (
-          <TabsTrigger
-            key={item.value}
-            value={item.value}
-            className="dark:data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:bg-pink-500 dark:data-[state=inactive]:bg-slate-600 shadow-lg flex-1"
-          >
-            {item.title}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-      {tabs.map((categoryTab: Tab) => {
-        
-        return (
-          <TabsContent key={categoryTab.value} value={categoryTab.value}>
-            <div
-
-              className="grid gap-5 grid-cols-2 cel:grid-cols-1 cel2:grid-cols-2 md:grid-cols-4 mt-10"
+    <div className="w-full max-w-6xl mx-auto px-4">
+      <Tabs defaultValue="sushi" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-6 md:mb-8">
+          {tabs.map((item) => (
+            <TabsTrigger
+              key={item.value}
+              value={item.value}
+              className="text-xs md:text-sm lg:text-base font-medium px-2 md:px-4 py-2 md:py-3 dark:data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:bg-pink-500 dark:data-[state=inactive]:bg-slate-600 shadow-lg"
             >
+              {item.title}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        
+        {tabs.map((categoryTab) => (
+          <TabsContent key={categoryTab.value} value={categoryTab.value} className="mt-0">
+            <div className="grid gap-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {categoryTab.products.length > 0 &&
-                categoryTab.products.map((val: CategoryTabProducts, index: number) => {
-
-                  return (
-                    <ProductItem key={index} item={val} />
-                  )
-                })}
+                categoryTab.products.map((val, index) => (
+                  <ProductItem key={index} item={val} />
+                ))}
             </div>
             {categoryTab.products.length === 0 && (
-              <div className="flex flex-col items-center justify-center ">
+              <div className="flex flex-col items-center justify-center py-8 md:py-12">
                 <ErrorHandler
                   products={categoryTab.products}
                   title={categoryTab.title}
@@ -45,8 +54,8 @@ export const ProductsTab = async () => {
               </div>
             )}
           </TabsContent>
-        )
-      })}
-    </Tabs>
+        ))}
+      </Tabs>
+    </div>
   );
 };

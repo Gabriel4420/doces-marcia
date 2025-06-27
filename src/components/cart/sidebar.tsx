@@ -6,83 +6,111 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
-import { RocketIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CartItem } from "./item";
 import { useCartStore } from "@/store/cart-store";
-import { useEffect, useState } from "react";
-import { CartProductItem } from "./item";
+import { useAuth } from "@/contexts/auth-context";
+import { ShoppingCart, X } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { CheckoutDialog } from "@/components/checkout/dialog";
 
 export const CartSidebar = () => {
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
-
-  const { cart } = useCartStore((state) => state);
-  const [isHovered, setIsHovered] = useState(false);
+  const { cart, clearCart } = useCartStore();
+  const { isLoggedIn } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const itemsWithQuantity = cart.filter(item => item.quantity > 0);
+  const router = useRouter();
 
-  let subtotal = 0;
-  cart.forEach((item) => {
-    subtotal += item.quantity * item.product.price;
-  });
-  return (
-    <Sheet>
-      <SheetTrigger
-        className={`relative flex items-center gap-x-2 border-[#757c84] ${
-          isHovered || (isOpen && "border-green-500")
-        } hover:border-green-500 border rounded-md p-2`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Cart"
-        aria-describedby="cart-button"
-      >
-        <RocketIcon className="mr-2 h-4 w-4" />
-        <p>Carrinho</p>
-        {cart.length > 0 && (
-          <div
-            className={`absolute size-4 ${
-              isHovered ? "bg-green-800" : "bg-red-500"
-            } text-white rounded-full -right-2 -top-1 `}
-          >
-            <p className="text-xs flex justify-center items-center">
-              {cart.map((item) => item.quantity).reduce((a, b) => a + b, 0)}
+  if (!isLoggedIn) {
+    return (
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="outline" size="icon" className="relative">
+            <ShoppingCart className="h-4 w-4" />
+            <span className="sr-only">Carrinho</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent setIsOpen={setIsOpen} side="right" className="w-full max-w-[312px] md:max-w-md">
+          <SheetHeader>
+            <SheetTitle className="text-lg md:text-xl">Carrinho</SheetTitle>
+          </SheetHeader>
+          <div className="flex flex-col items-center justify-center h-full text-center">
+            <ShoppingCart className="h-12 w-12 text-gray-400 mb-4" />
+            <p className="text-gray-500 text-sm md:text-base">
+              Faça login para acessar o carrinho
             </p>
           </div>
-        )}
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="icon" className="relative">
+          <ShoppingCart className="h-4 w-4" />
+          {itemsWithQuantity.length > 0 && (
+            <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {itemsWithQuantity.length}
+            </span>
+          )}
+          <span className="sr-only">Carrinho</span>
+        </Button>
       </SheetTrigger>
-      <SheetContent
-        side="right"
-        className="w-full sm:max-w-sm"
-        setIsOpen={setIsOpen}
-      >
-        <SheetHeader>
-          <SheetTitle className="text-lg font-semibold">
-            Carrinho de compras
+      <SheetContent setIsOpen={setIsOpen} side="right" className="w-full max-w-[312px] md:max-w-md flex flex-col">
+        <SheetHeader className="flex-shrink-0">
+          <SheetTitle className="text-lg md:text-xl flex items-center justify-between">
+            Carrinho
+            {itemsWithQuantity.length > 0 && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={clearCart}
+                className="h-6 w-6"
+                aria-label="Limpar carrinho"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
           </SheetTitle>
         </SheetHeader>
-        <div className="mt-4 flex flex-col gap-y-4">
-          {cart.map((item) => {
-            return <CartProductItem key={item.product.id} item={item} />;
-          })}
-        </div>
-        <Separator className="my-4" />
-        <div className="flex justify-between items-center text-xs">
-          <div>Subtotal:</div>
-          <div className="font-semibold">R$ {subtotal.toFixed(2)}</div>
-        </div>
-        <Separator className="my-4" />
-        <div className="text-center">
-          <button
-            onClick={() => setCheckoutOpen(true)}
-            disabled={cart.length == 0}
-            className="bg-slate-800 hover:bg-green-500 capitalize hover:transition-colors flex items-center justify-center  text-xs text-white rounded-md px-4 py-2 disabled:bg-red-300 disabled:cursor-not-allowed"
-          >
-            <RocketIcon className="mr-2 h-4 w-4" />
-            Finalizar compra
-          </button>
+
+        <div className="flex-1 overflow-y-auto py-4">
+          {itemsWithQuantity.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <ShoppingCart className="h-12 w-12 text-gray-400 mb-4" />
+              <p className="text-gray-500 text-sm md:text-base">
+                Seu carrinho está vazio
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3 md:space-y-4">
+              {itemsWithQuantity.map((item) => (
+                <CartItem key={item.product.id} item={{ item: { product: item.product, quantity: item.quantity } }} />
+              ))}
+            </div>
+          )}
         </div>
 
-        {checkoutOpen && <CheckoutDialog checkoutOpen={checkoutOpen} setCheckoutOpen={setCheckoutOpen} />}
+        {itemsWithQuantity.length > 0 && itemsWithQuantity.map((item) => {
+          return (
+            <div key={item.product.id} className="flex-shrink-0 border-t pt-4 space-y-3 md:space-y-4">
+              <div className="flex justify-between items-center text-sm md:text-base">
+                <span className="font-medium">Total:</span>
+                <span className="font-bold text-pink-500">
+                  R$ {item.product.price.toFixed(2)}
+                </span>
+              </div>
+              <Button className="w-full bg-pink-500 hover:bg-pink-600 text-white text-sm md:text-base py-2 md:py-3" onClick={() => setCheckoutOpen(true)}>
+                Finalizar Compra
+              </Button>
+            </div>
+          )
+        })}
+        <CheckoutDialog checkoutOpen={checkoutOpen} setCheckoutOpen={setCheckoutOpen} />
       </SheetContent>
     </Sheet>
   );
