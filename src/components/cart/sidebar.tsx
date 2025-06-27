@@ -22,6 +22,7 @@ export const CartSidebar = () => {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const itemsWithQuantity = cart.filter(item => item.quantity > 0);
   const router = useRouter();
+  const total = itemsWithQuantity.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
   if (!isLoggedIn) {
     return (
@@ -95,21 +96,19 @@ export const CartSidebar = () => {
           )}
         </div>
 
-        {itemsWithQuantity.length > 0 && itemsWithQuantity.map((item) => {
-          return (
-            <div key={item.product.id} className="flex-shrink-0 border-t pt-4 space-y-3 md:space-y-4">
-              <div className="flex justify-between items-center text-sm md:text-base">
-                <span className="font-medium">Total:</span>
-                <span className="font-bold text-pink-500">
-                  R$ {item.product.price.toFixed(2)}
-                </span>
-              </div>
-              <Button className="w-full bg-pink-500 hover:bg-pink-600 text-white text-sm md:text-base py-2 md:py-3" onClick={() => setCheckoutOpen(true)}>
-                Finalizar Compra
-              </Button>
+        {itemsWithQuantity.length > 0 && (
+          <div className="flex-shrink-0 border-t pt-4 space-y-3 md:space-y-4">
+            <div className="flex justify-between items-center text-sm md:text-base">
+              <span className="font-medium">Total:</span>
+              <span className="font-bold text-pink-500">
+                R$ {total.toFixed(2)}
+              </span>
             </div>
-          )
-        })}
+            <Button className="w-full bg-pink-500 hover:bg-pink-600 text-white text-sm md:text-base py-2 md:py-3" onClick={() => setCheckoutOpen(true)}>
+              Finalizar Compra
+            </Button>
+          </div>
+        )}
         <CheckoutDialog checkoutOpen={checkoutOpen} setCheckoutOpen={setCheckoutOpen} />
       </SheetContent>
     </Sheet>

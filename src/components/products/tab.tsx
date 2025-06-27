@@ -30,7 +30,7 @@ export const ProductsTab = () => {
             <TabsTrigger
               key={item.value}
               value={item.value}
-              className="text-xs md:text-sm lg:text-base font-medium px-2 md:px-4 py-2 md:py-3 dark:data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:bg-pink-500 dark:data-[state=inactive]:bg-slate-600 shadow-lg"
+              className="text-xs shadow-md md:text-sm lg:text-base font-medium px-2 md:px-4 py-2 md:py-3 dark:data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:bg-pink-500 dark:data-[state=inactive]:bg-slate-600"
             >
               {item.title}
             </TabsTrigger>
