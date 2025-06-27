@@ -5,9 +5,10 @@ import { getTabs } from "@/helpers/queryTabProducts";
 import { ErrorHandler } from "@/helpers/errorHandlers";
 import { ProductItem } from "./card-product-item";
 import { useEffect, useState } from "react";
+import { Tabs as TabsType } from "@/types/product";
 
 export const ProductsTab = () => {
-  const [tabs, setTabs] = useState([]);
+  const [tabs, setTabs] = useState<TabsType>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
