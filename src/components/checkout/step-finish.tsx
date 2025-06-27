@@ -13,15 +13,8 @@ export const StepFinish = () => {
     process.env.NEXT_PUBLIC_WHATSAPPNUMBER
   }?text=${encodeURI(message)}`;
 
-  const linkZap2 = `https://wa.me/+55${unformattedPhone}?text=${encodeURI(
-    message
-  )}`;
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.open(linkZap2, "_blank");
-    }
-  }, []);
+  
+  
 
   return (
     <div className="text-center flex flex-col gap-5">

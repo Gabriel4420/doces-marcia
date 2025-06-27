@@ -17,7 +17,7 @@ import { useCheckoutStore } from "@/store/checkout-store";
 import { Button } from "../ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { InputMask } from "@react-input/mask";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect } from "react";
 
 export const StepUser = ({ setStep }: CheckoutStepUserProps) => {
   const { user, setUser } = useCheckoutStore((state) => state);
@@ -28,6 +28,22 @@ export const StepUser = ({ setStep }: CheckoutStepUserProps) => {
       ...user,
     },
   });
+
+  // Preencher name e email com dados do localStorage, se existirem
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        try {
+          const userObj = JSON.parse(userStr);
+          if (userObj.name) userForm.setValue("name", userObj.name);
+          if (userObj.email) userForm.setValue("email", userObj.email);
+        } catch (e) {
+          // erro no parse, ignora
+        }
+      }
+    }
+  }, [userForm]);
 
   const onSubmit = (values: z.infer<typeof userFormSchema>) => {
     setUser(values);
