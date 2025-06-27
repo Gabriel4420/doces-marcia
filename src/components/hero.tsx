@@ -9,9 +9,9 @@ const Hero = () => {
       role="region"
       aria-labelledby="hero-title"
     >
-      <div className="container mx-auto px-4 max-w-[312px] md:max-w-none">
-        <div className="flex flex-col md:flex-row items-center">
-          <div className="w-full md:w-1/2 mb-6 md:mb-0">
+      <div className="w-full max-w-6xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1.8fr] gap-8 items-center">
+          <div className="md:-ml-40 dark:bg-gray-900 w-[700px] p-8 bg-pink-100 rounded-lg shadow-md">
             <h2
               id="hero-title"
               className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 dark:text-white mb-3 md:mb-4 text-center md:text-left"
@@ -40,11 +40,11 @@ const Hero = () => {
               </a>
             </div>
           </div>
-          <div className="w-full md:w-1/2 flex justify-center">
+          <div className="flex justify-center items-center h-full">
             <Image
               src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx2fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=627&q=80"
               alt="Bandeja de doces caseiros variados, feitos artesanalmente por Dona Márcia"
-              className="rounded-xl shadow-xl w-full max-w-[280px] md:max-w-md animate-zoom-in"
+              className="rounded-xl shadow-xl w-full h-auto object-cover"
               tabIndex={0}
               width={627}
               height={418}

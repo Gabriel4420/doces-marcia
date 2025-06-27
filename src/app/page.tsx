@@ -8,6 +8,8 @@ import { ProductsTab } from "@/components/products/tab";
 import Newsletter from "@/components/newsletter";
 import Testimonial from "@/components/testimonial";
 import { Suspense } from "react";
+import { WhatsappButton } from "@/components/whatsapp-button";
+import { BackToTopButton } from "@/components/back-to-top-button";
 
 export default function Home() {
   return (
@@ -33,6 +35,8 @@ export default function Home() {
       <Testimonial />
       <Contact />
       <Newsletter />
+      <WhatsappButton />
+      <BackToTopButton />
       <Footer />
     </div>
   );
