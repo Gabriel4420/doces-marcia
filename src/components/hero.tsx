@@ -11,7 +11,7 @@ const Hero = () => {
     >
       <div className="w-full max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1.8fr] gap-8 items-center">
-          <div className="md:-ml-40 dark:bg-gray-900 w-[700px] p-8 bg-pink-100 rounded-lg shadow-md">
+          <div className="md:-ml-40 dark:bg-gray-900 md:w-[700px] md:p-8 bg-pink-100 rounded-lg shadow-md">
             <h2
               id="hero-title"
               className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 dark:text-white mb-3 md:mb-4 text-center md:text-left"
