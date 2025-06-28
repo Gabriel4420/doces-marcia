@@ -63,7 +63,7 @@ export async function PUT(req: NextRequest) {
   const contentType = req.headers.get('content-type') || '';
   if (contentType.includes('multipart/form-data')) {
     const formData = await req.formData();
-    const id = parseInt(formData.get('id'));
+    const id = parseInt((formData.get('id') ?? '').toString());
     const name = formData.get('name');
     const category = formData.get('category');
     let imageUrl = formData.get('imageUrl') || '';
