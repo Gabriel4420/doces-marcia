@@ -1,6 +1,9 @@
 import React from "react";
 import Image from "next/image";
-import { TestimonialCardProps } from "@/types/testimonial-card";
+
+export interface TestimonialCardProps {
+  image: string;
+}
 
 export const TestimonialCard = ({ image }: TestimonialCardProps) => {
   return (
