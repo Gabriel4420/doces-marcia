@@ -11,9 +11,3 @@ export type Tabs = Array<{
   value: string;
   products: Product[];
 }>;
-
-export type Tab = {
-  title: string;
-  value: string;
-  products: Product[];
-};
