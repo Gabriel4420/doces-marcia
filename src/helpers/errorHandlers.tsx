@@ -1,4 +1,4 @@
-import { Tab } from "@/types/product";
+import { Tab } from "@/types/tabs";
 
 export const ErrorHandler = (categoryTab: Tab) => {
   return (
