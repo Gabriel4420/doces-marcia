@@ -17,12 +17,3 @@ export type Tab = {
   value: string;
   products: Product[];
 };
-
-export interface CategoryTabProducts {
-  id: number,
-  category: string,
-  image: string,
-  name: string,
-  price: number
-
-}
