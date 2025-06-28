@@ -1,7 +1,6 @@
 "use client"
-import { Logo } from "@/components/logo";
+
 import { ModeToggle } from "./theme-toggle";
-import { CartSidebar } from "@/components/cart/sidebar";
 import { LucideCandy } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useState } from "react";
@@ -40,31 +39,7 @@ const Header = () => {
               <svg className="w-6 h-6 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
 
-            <div className="flex items-center gap-2 md:gap-3">
-              <CartSidebar />
-              {isLoggedIn ? (
-                <div className="flex items-center gap-1 md:gap-2">
-                  <span className="text-xs md:text-sm text-gray-600 dark:text-gray-300 hidden sm:block">
-                    Olá, {user?.name}
-                  </span>
-                  <button
-                    onClick={handleLogout}
-                    className="text-pink-500 hover:underline text-xs md:text-sm"
-                    aria-label="Fazer logout"
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <a
-                  href="/login"
-                  className="text-pink-500 hover:underline text-xs md:text-sm"
-                  aria-label="Fazer login"
-                >
-                  Login
-                </a>
-              )}
-            </div>
+            
           </div>
         </div>
 

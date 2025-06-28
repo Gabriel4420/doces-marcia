@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { ModeToggle } from "@/components/theme-toggle";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -18,6 +19,7 @@ export default function LoginPage() {
   
   const { login } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,11 +36,12 @@ export default function LoginPage() {
     setIsLoading(true);
     
     try {
-      await login(email, password);
+      await login(email, password, router);
       toast({
         title: "Login realizado!",
         description: "Bem-vindo de volta!",
       });
+      router.push("/admin");
     } catch (error) {
       toast({
         title: "Erro no login",
@@ -55,9 +58,13 @@ export default function LoginPage() {
       {/* Botão flutuante de retorno */}
       <div className="fixed top-6 left-6 z-50">
         <Link href="/">
-          <Button variant="outline" size="icon" className="rounded-full shadow-lg border border-gray-200 dark:border-gray-700">
+          <button
+            type="button"
+            className="rounded-full shadow-lg border border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            aria-label="Voltar"
+          >
             <ArrowLeft className="h-4 w-4" />
-          </Button>
+          </button>
         </Link>
       </div>
 
@@ -70,6 +77,7 @@ export default function LoginPage() {
 
       <form onSubmit={handleLogin} className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-xl shadow-xl w-full max-w-[280px] md:max-w-sm">
         <div className="text-center mb-6 md:mb-8">
+          <img src="/images/logo.jpg" alt="Logo Delicias da Márcia" className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-pink-200 shadow" />
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-2">
             Bem-vindo de volta!
           </h1>
@@ -110,8 +118,6 @@ export default function LoginPage() {
               />
               <Button
                 type="button"
-                variant="ghost"
-                size="icon"
                 className="absolute right-0 top-0 h-full px-3"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}

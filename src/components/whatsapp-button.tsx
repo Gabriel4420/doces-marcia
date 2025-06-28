@@ -1,6 +1,6 @@
 import React from "react";
 import { FaWhatsapp } from "react-icons/fa";
-const WHATSAPP_NUMBER = "5599999999999"; // Substitua pelo número desejado, com DDI e DDD
+const WHATSAPP_NUMBER = "5517991271906"; // Número atualizado com DDI e DDD
 const WHATSAPP_MESSAGE = "Olá! Gostaria de saber mais sobre os produtos.";
 
 export const WhatsappButton = () => {

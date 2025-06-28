@@ -67,21 +67,17 @@ export default {
       },
       keyframes: {
         zoomIn: {
-          "0%": { 
-            opacity: "0",
-            transform: "scale(0.3)"
-          },
-          "50%": {
-            opacity: "1"
-          },
-          "100%": {
-            opacity: "1",
-            transform: "scale(1)"
-          }
+          "0%": { opacity: "0", transform: "scale(0.7)" },
+          "100%": { opacity: "1", transform: "scale(1)" }
+        },
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" }
         }
       },
       animation: {
-        "zoom-in": "zoomIn 2s ease-in-out"
+        "zoom-in": "zoomIn 0.7s cubic-bezier(0.4,0,0.2,1)",
+        "fade-in": "fadeIn 1s ease-in"
       }
     },
   },

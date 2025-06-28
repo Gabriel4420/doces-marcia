@@ -1,7 +1,4 @@
-interface LogoProps {
-  heading?: string;
-  subheading?: string;
-}
+import { LogoProps } from "@/types/logo";
 
 export const Logo = ({heading = 'ZAP', subheading = 'Loja'}: LogoProps) => {
   return (

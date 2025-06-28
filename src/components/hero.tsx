@@ -11,7 +11,7 @@ const Hero = () => {
     >
       <div className="w-full max-w-6xl mx-auto px-1 xs:px-2 sm:px-4">
         <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1.8fr] gap-8 items-center">
-          <div className="lg:-ml-40 dark:bg-gray-900 md:w-[768px] md:p-8 bg-pink-100 rounded-lg shadow-md">
+          <div className="order-2 md:order-1 lg:-ml-40 dark:bg-gray-900 md:w-[768px] md:p-8 bg-pink-100 rounded-lg shadow-md">
             <h2
               id="hero-title"
               className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 dark:text-white mb-3 md:mb-4 text-center md:text-left"
@@ -40,7 +40,7 @@ const Hero = () => {
               </a>
             </div>
           </div>
-          <div className="flex justify-center items-center h-full">
+          <div className="order-1 md:order-2 flex justify-center items-center h-full">
             <Image
               src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx2fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=627&q=80"
               alt="Bandeja de doces caseiros variados, feitos artesanalmente por Dona Márcia"

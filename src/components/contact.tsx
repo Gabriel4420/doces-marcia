@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, MapPin, Phone, Clock, Send } from "lucide-react";
+import { Mail, MapPin, Phone, Send } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -28,14 +28,16 @@ const Contact = () => {
 
   const onSubmit = async (data: ContactFormData) => {
     try {
-      // Simular envio do formulário
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Erro ao enviar");
       toast({
         title: "Mensagem enviada!",
         description: "Obrigada pelo contato. Retornaremos em breve!",
       });
-      
       reset();
     } catch (error) {
       toast({
@@ -56,7 +58,7 @@ const Contact = () => {
       <div className="container mx-auto px-4 max-w-[312px] md:max-w-none">
         <div className="text-center mb-8 md:mb-12">
           <h2 id="contact-title" className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 md:mb-4">
-            Fale com a <span className="text-white">Dona Márcia</span>
+            Fale com a <span className="text-white">Márcia</span>
           </h2>
           <p className="text-base md:text-lg max-w-2xl mx-auto opacity-90 px-2">
             Tire suas dúvidas ou faça seu pedido especial
@@ -67,7 +69,7 @@ const Contact = () => {
           <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
             {/* Informações de Contato */}
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-white/20">
-              <div className="space-y-6 md:space-y-8">
+              <div className="space-y-6 md:space-y-6">
                 <div>
                   <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 flex items-center justify-center md:justify-start">
                     <MapPin className="w-5 h-5 md:w-6 md:h-6 mr-2" aria-hidden="true" />
@@ -79,7 +81,8 @@ const Contact = () => {
                       <MapPin className="w-4 h-4 md:w-5 md:h-5 mt-1 text-pink-200" aria-hidden="true" />
                       <div>
                         <p className="font-medium text-sm md:text-base">Endereço</p>
-                        <p className="text-pink-100 text-sm md:text-base">Rua dos Doces, 123 - Centro</p>
+                        <p className="text-pink-100 text-sm md:text-base">João Pedro Martins Rodrigues, 675
+                        Fraternidade 2</p>
                         <p className="text-pink-100 text-sm md:text-base">São Paulo/SP</p>
                       </div>
                     </div>
@@ -89,12 +92,12 @@ const Contact = () => {
                       <div>
                         <p className="font-medium text-sm md:text-base">Telefone</p>
                         <a
-                          href="tel:+5511987654321"
+                          href="https://wa.me/5517991271906?text=Ol%C3%A1!%20Gostaria%20de%20saber%20mais%20sobre%20os%20produtos."
                           className="text-pink-100 underline focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm md:text-base"
-                          aria-label="Ligar para (11) 98765-4321"
+                          aria-label="Ligar para (17) 99127-1906"
                           tabIndex={0}
                         >
-                          (11) 98765-4321
+                          (17) 99127-1906
                         </a>
                       </div>
                     </div>
@@ -104,41 +107,18 @@ const Contact = () => {
                       <div>
                         <p className="font-medium text-sm md:text-base">Email</p>
                         <a
-                          href="mailto:contato@donamarcia.com.br"
+                          href="mailto:mconteperez@gmail.com"
                           className="text-pink-100 underline focus:outline-none focus:ring-2 focus:ring-pink-300 text-sm md:text-base"
-                          aria-label="Enviar email para contato@donamarcia.com.br"
+                          aria-label="Enviar email para mconteperez@gmail.com"
                           tabIndex={0}
                         >
-                          contato@donamarcia.com.br
+                          mconteperez@gmail.com
                         </a>
                       </div>
                     </div>
                   </div>
                 </div>
-                
-                <Separator className="bg-white/20" />
-                
-                <div>
-                  <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 flex items-center justify-center md:justify-start">
-                    <Clock className="w-5 h-5 md:w-6 md:h-6 mr-2" aria-hidden="true" />
-                    Horário de Atendimento
-                  </h3>
-                  
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center text-sm md:text-base">
-                      <span className="text-pink-100">Segunda a Sexta</span>
-                      <span className="font-medium">8h às 18h</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm md:text-base">
-                      <span className="text-pink-100">Sábado</span>
-                      <span className="font-medium">9h às 13h</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm md:text-base">
-                      <span className="text-pink-100">Domingo</span>
-                      <span className="font-medium text-pink-200">Fechado</span>
-                    </div>
-                  </div>
-                </div>
+              
               </div>
             </div>
             

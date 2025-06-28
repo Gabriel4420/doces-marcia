@@ -16,7 +16,7 @@ export const ErrorHandler = (categoryTab: Tab) => {
           <h3 className="text-lg normal-case font-thin">
             Isso é embaraçoso 😅😅😅
             <br /> Aparentemente acabaram os estoques de
-            <span className="font-bold"> sushi  🍣  </span> 
+            <span className="font-bold"> sushi  🍣  </span>
           </h3>
         </div>
       ) : categoryTab.title === "Combinados" ? (
@@ -33,17 +33,12 @@ export const ErrorHandler = (categoryTab: Tab) => {
           </h3>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center my-10">
-          <img
-            src="/images/errors/bebidas-error.png"
-            width={150}
-            height={150}
-          />
-          <h3 className="text-lg normal-case font-thin flex flex-col items-center justify-center">
-            Isso é embaraçoso 😅😅😅
-            <br /> Aparentemente o estoque de
+        <div className="flex flex-col mx-auto w-full items-center justify-center my-10">
+          <h3 className="text-lg normal-case font-thin flex flex-col items-center justify-center ">
+            😭😭😭 <br/>
+            Em breve ...
             <span className="font-bold"> {categoryTab.title} </span>
-            acabou
+            
           </h3>
         </div>
       )}

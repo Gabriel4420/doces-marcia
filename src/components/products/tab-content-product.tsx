@@ -14,7 +14,7 @@ export const TabContentProduct = ({ tabs }: any) => {
           >
             {categoryTab.products.length > 0 &&
               categoryTab.products.map((val: any) => (
-                <ProductItem key={val.value} item={val} />
+                <ProductItem key={val.value || val.id} item={val} />
               ))}
           </div>
           {categoryTab.products.length === 0 && (

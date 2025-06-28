@@ -1,25 +1,9 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-
-interface User {
-  name: string;
-  email: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  isLoggedIn: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  logout: () => void;
-  register: (name: string, email: string, password: string) => Promise<boolean>;
-}
+import { AuthContextType, User, AuthProviderProps } from "@/types/auth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-interface AuthProviderProps {
-  children: ReactNode;
-}
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
@@ -29,7 +13,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     const savedLoginStatus = localStorage.getItem("isLoggedIn");
-    
+
     if (savedUser && savedLoginStatus === "true") {
       setUser(JSON.parse(savedUser));
       setIsLoggedIn(true);
@@ -38,12 +22,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
     try {
-      // Simular registro - em produção, isso seria uma chamada para API
-      const newUser = { name, email };
-      
-      // Salvar dados do usuário no localStorage (em produção, seria no backend)
-      localStorage.setItem("userData", JSON.stringify({ name, email, password }));
-      
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, type: "register" }),
+      });
+      if (!res.ok) return false;
       return true;
     } catch (error) {
       console.error("Erro no registro:", error);
@@ -51,43 +35,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string, router?: any): Promise<boolean> => {
     try {
-      // Simular verificação de login - em produção, isso seria uma chamada para API
-      const userData = localStorage.getItem("userData");
-      
-      if (userData) {
-        const savedUser = JSON.parse(userData);
-        
-        // Verificar se email e senha correspondem
-        if (savedUser.email === email && savedUser.password === password) {
-          const user = { name: savedUser.name, email: savedUser.email };
-          
-          setUser(user);
-          setIsLoggedIn(true);
-          
-          // Salvar no localStorage
-          localStorage.setItem("user", JSON.stringify(user));
-          localStorage.setItem("isLoggedIn", "true");
-          
-          return true;
-        }
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, type: "login" }),
+      });
+      if (!res.ok) return false;
+      const userData = await res.json();
+      setUser(userData);
+      setIsLoggedIn(true);
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("isLoggedIn", "true");
+      if (router) {
+        router.push("/");
+      } else {
+        window.location.href = "/";
       }
-      
-      // Login padrão para teste (remover em produção)
-      if (email === "teste@teste.com" && password === "123456") {
-        const defaultUser = { name: "Usuário Teste", email: "teste@teste.com" };
-        
-        setUser(defaultUser);
-        setIsLoggedIn(true);
-        
-        localStorage.setItem("user", JSON.stringify(defaultUser));
-        localStorage.setItem("isLoggedIn", "true");
-        
-        return true;
-      }
-      
-      return false;
+      return true;
     } catch (error) {
       console.error("Erro no login:", error);
       return false;
@@ -97,8 +63,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = () => {
     setUser(null);
     setIsLoggedIn(false);
-    
-    // Limpar localStorage
     localStorage.removeItem("user");
     localStorage.removeItem("isLoggedIn");
   };

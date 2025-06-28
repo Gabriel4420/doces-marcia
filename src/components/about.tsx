@@ -13,9 +13,9 @@ const About = () => {
                 <div className="w-full md:w-1/3 mb-6 md:mb-0 flex justify-center">
                     <div className="relative">
                           <img
-                            src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&amp;ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx2fGVufDB8fHx8fA%3D%3D&amp;auto=format&amp;fit=crop&amp;w=761&amp;q=80"
+                            src="images/author-dona-marcia-delicias-da-marcia.jpg"
                             alt="Retrato de Dona Márcia, confeiteira experiente e fundadora da doceria."
-                            className="rounded-full w-48 h-48 md:w-64 md:h-64 object-cover shadow-xl border-4 border-white"
+                            className="rounded-full w-48 h-48 md:w-64 md:h-64 md:object-right shadow-xl border-4 border-white mx-auto"
                             tabIndex={0}
                             aria-label="Retrato de Dona Márcia, confeiteira experiente e fundadora da doceria."
                           />

@@ -5,7 +5,7 @@ import Header from "@/components/header";
 import Hero from "@/components/hero";
 import { TabsSkeleton } from "@/components/products/skeleton";
 import { ProductsTab } from "@/components/products/tab";
-import Newsletter from "@/components/newsletter";
+
 import Testimonial from "@/components/testimonial";
 import { Suspense } from "react";
 import { WhatsappButton } from "@/components/whatsapp-button";
@@ -34,7 +34,7 @@ export default function Home() {
       <About />
       <Testimonial />
       <Contact />
-      <Newsletter />
+     
       <WhatsappButton />
       <BackToTopButton />
       <Footer />

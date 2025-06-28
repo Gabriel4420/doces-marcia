@@ -43,7 +43,7 @@ const RegisterPage = () => {
       if (success) {
         toast({
           title: "Cadastro realizado com sucesso! 🎉",
-          description: "Sua conta foi criada. Redirecionando para login...",
+          description: "Sua conta foi criada. Redirecionando para painel admin...",
           variant: "default",
         });
         
@@ -52,9 +52,9 @@ const RegisterPage = () => {
         setSenha("");
         setConfirmarSenha("");
         
-        // Redirecionar para login após 2 segundos
+        // Redirecionar para painel admin após 2 segundos
         setTimeout(() => {
-          router.push("/login");
+          router.push("/admin");
         }, 2000);
       } else {
         toast({
