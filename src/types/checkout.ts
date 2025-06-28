@@ -18,7 +18,7 @@ export type Address = {
   zipCode: string;
 };
 
-export type User = {
+export type CheckoutUser = {
   name?: string;
   documentId?: string;
   email?: string;
