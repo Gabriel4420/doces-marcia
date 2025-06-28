@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CardProductProperties } from "@/types/product";
+import { CardProductProperties } from "@/types/tabs";
 import { ShoppingCart } from "lucide-react";
 
 export const ProductItem = ({ item }: CardProductProperties) => {
