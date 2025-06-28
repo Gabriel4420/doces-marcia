@@ -28,7 +28,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             <div className="min-h-screen bg-background">
-              <main className="w-full mx-auto max-w-[312px] md:max-w-none">
+              <main className="w-full mx-auto max-w-[1203px] md:max-w-none">
                 {children}
               </main>
             </div>

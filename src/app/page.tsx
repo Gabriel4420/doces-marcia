@@ -13,7 +13,7 @@ import { BackToTopButton } from "@/components/back-to-top-button";
 
 export default function Home() {
   return (
-    <div className="w-full mx-auto max-w-[312px] md:max-w-none">
+    <div className="w-full mx-auto max-w-[1203px] md:max-w-none">
       <Header />
       <Hero />
       <div id="produtos">

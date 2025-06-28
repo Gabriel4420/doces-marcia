@@ -61,7 +61,7 @@ export const CartSidebar = () => {
           <span className="sr-only">Carrinho</span>
         </Button>
       </SheetTrigger>
-      <SheetContent setIsOpen={setIsOpen} side="right" className="w-full max-w-[312px] md:max-w-md flex flex-col">
+      <SheetContent setIsOpen={setIsOpen} side="right" className="w-full max-w-[312px] md:max-w-md flex flex-col px-1 xs:px-2 sm:px-4">
         <SheetHeader className="flex-shrink-0">
           <SheetTitle className="text-lg md:text-xl flex items-center justify-between">
             Carrinho
@@ -104,7 +104,7 @@ export const CartSidebar = () => {
                 R$ {total.toFixed(2)}
               </span>
             </div>
-            <Button className="w-full bg-pink-500 hover:bg-pink-600 text-white text-sm md:text-base py-2 md:py-3" onClick={() => setCheckoutOpen(true)}>
+            <Button className="w-full bg-pink-500 hover:bg-pink-600 text-white text-xs sm:text-sm md:text-base py-2 md:py-3" onClick={() => setCheckoutOpen(true)}>
               Finalizar Compra
             </Button>
           </div>

@@ -3,15 +3,15 @@ import { LucideCandy, LucideClock, LucideHeart, LucideMail, LucideMapPin, Lucide
 const Footer = () => {
     return (
         <footer className="dark:bg-gray-900 bg-gray-100 dark:text-white text-gray-900 py-8 md:py-12" role="contentinfo">
-            <div className="container mx-auto px-4 max-w-[312px] md:max-w-none">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            <div className="container mx-auto px-1 xs:px-2 sm:px-4 max-w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                     {/* Logo e Descrição */}
                     <div className="text-center md:text-left">
                         <div className="flex items-center justify-center md:justify-start mb-3 md:mb-4">
                             <LucideCandy className="text-2xl md:text-3xl text-pink-500 mr-2" aria-hidden="true" />
                             <h3 className="text-xl md:text-2xl font-bold text-pink-500">Delicias da Márcia</h3>
                         </div>
-                        <p className="text-sm md:text-base dark:text-gray-300 text-gray-900 mb-4 leading-relaxed">
+                        <p className="text-xs sm:text-sm md:text-base dark:text-gray-300 text-gray-900 mb-4 leading-relaxed">
                             Doces caseiros feitos com amor e ingredientes selecionados. Há mais de 25 anos levando sabor e alegria para sua mesa.
                         </p>
                         <div className="flex justify-center md:justify-start space-x-3">
@@ -50,12 +50,12 @@ const Footer = () => {
 
                     {/* Links Rápidos */}
                     <div className="text-center md:text-left">
-                        <h4 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-pink-500">Links Rápidos</h4>
+                        <h4 className="text-base sm:text-lg md:text-xl font-semibold mb-3 md:mb-4 text-pink-500">Links Rápidos</h4>
                         <ul className="space-y-2">
                             <li>
                                 <a
                                     href="#inicio"
-                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-sm md:text-base"
+                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-xs sm:text-sm md:text-base"
                                     aria-label="Ir para o início da página"
                                     tabIndex={0}
                                 >
@@ -65,7 +65,7 @@ const Footer = () => {
                             <li>
                                 <a
                                     href="#produtos"
-                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-sm md:text-base"
+                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-xs sm:text-sm md:text-base"
                                     aria-label="Ver produtos"
                                     tabIndex={0}
                                 >
@@ -75,7 +75,7 @@ const Footer = () => {
                             <li>
                                 <a
                                     href="#sobre"
-                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-sm md:text-base"
+                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-xs sm:text-sm md:text-base"
                                     aria-label="Sobre a Dona Márcia"
                                     tabIndex={0}
                                 >
@@ -85,7 +85,7 @@ const Footer = () => {
                             <li>
                                 <a
                                     href="#contato"
-                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-sm md:text-base"
+                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-xs sm:text-sm md:text-base"
                                     aria-label="Entre em contato"
                                     tabIndex={0}
                                 >
@@ -97,17 +97,17 @@ const Footer = () => {
 
                     {/* Contato */}
                     <div className="text-center md:text-left">
-                        <h4 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-pink-500">Contato</h4>
+                        <h4 className="text-base sm:text-lg md:text-xl font-semibold mb-3 md:mb-4 text-pink-500">Contato</h4>
                         <div className="space-y-2 md:space-y-3">
                             <div className="flex items-center justify-center md:justify-start">
                                 <LucideMapPin className="w-4 h-4 md:w-5 md:h-5 text-pink-500 mr-2" aria-hidden="true" />
-                                <span className="dark:text-gray-300 text-gray-900 text-sm md:text-base">Rua dos Doces, 123 - Centro</span>
+                                <span className="dark:text-gray-300 text-gray-900 text-xs sm:text-sm md:text-base">Rua dos Doces, 123 - Centro</span>
                             </div>
                             <div className="flex items-center justify-center md:justify-start">
                                 <LucidePhone className="w-4 h-4 md:w-5 md:h-5 text-pink-500 mr-2" aria-hidden="true" />
                                 <a
                                     href="tel:+5511987654321"
-                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-sm md:text-base"
+                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-xs sm:text-sm md:text-base"
                                     aria-label="Ligar para (11) 98765-4321"
                                     tabIndex={0}
                                 >
@@ -118,7 +118,7 @@ const Footer = () => {
                                 <LucideMail className="w-4 h-4 md:w-5 md:h-5 text-pink-500 mr-2" aria-hidden="true" />
                                 <a
                                     href="mailto:contato@donamarcia.com.br"
-                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-sm md:text-base"
+                                    className="dark:text-gray-300 text-gray-900 hover:text-pink-500 transition-colors duration-300 text-xs sm:text-sm md:text-base"
                                     aria-label="Enviar email para contato@donamarcia.com.br"
                                     tabIndex={0}
                                 >
@@ -130,17 +130,17 @@ const Footer = () => {
 
                     {/* Horário de Funcionamento */}
                     <div className="text-center md:text-left">
-                        <h4 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-pink-500">Horário</h4>
+                        <h4 className="text-base sm:text-lg md:text-xl font-semibold mb-3 md:mb-4 text-pink-500">Horário</h4>
                         <div className="space-y-1 md:space-y-2">
-                            <div className="flex justify-between items-center text-sm md:text-base">
+                            <div className="flex justify-between items-center text-xs sm:text-sm md:text-base">
                                 <span className="dark:text-gray-300 text-gray-900">Segunda a Sexta</span>
                                 <span className="text-pink-500 font-medium flex items-center justify-center"><LucideClock width={20} height={20} className="mr-2" />8h às 18h</span>
                             </div>
-                            <div className="flex justify-between items-center text-sm md:text-base">
+                            <div className="flex justify-between items-center text-xs sm:text-sm md:text-base">
                                 <span className="dark:text-gray-300 text-gray-900 ">Sábado</span>
                                 <span className="text-pink-500 font-medium flex items-center justify-center"><LucideClock width={20} height={20} className="mr-2" />9h às 13h</span>
                             </div>
-                            <div className="flex justify-between items-center text-sm md:text-base">
+                            <div className="flex justify-between items-center text-xs sm:text-sm md:text-base">
                                 <span className="dark:text-gray-300 text-gray-900">Domingo</span>
                                 <span className="dark:text-gray-500 text-gray-900">Fechado</span>
                             </div>
@@ -149,7 +149,7 @@ const Footer = () => {
                 </div>
 
                 <div className="border-t border-gray-800 mt-6 md:mt-8 pt-6 md:pt-8 text-center">
-                    <p className="text-sm md:text-base dark:text-gray-400 text-gray-900">
+                    <p className="text-xs sm:text-sm md:text-base dark:text-gray-400 text-gray-900">
                         © 2024 Delicias da Márcia. Todos os direitos reservados. Feito com{" "}
                         <LucideHeart className="inline w-4 h-4 text-pink-500" aria-hidden="true" /> por{" "}
                         <a

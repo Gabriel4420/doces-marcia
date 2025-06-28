@@ -9,16 +9,16 @@ const Hero = () => {
       role="region"
       aria-labelledby="hero-title"
     >
-      <div className="w-full max-w-6xl mx-auto px-4">
+      <div className="w-full max-w-6xl mx-auto px-1 xs:px-2 sm:px-4">
         <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1.8fr] gap-8 items-center">
-          <div className="md:-ml-40 dark:bg-gray-900 md:w-[700px] md:p-8 bg-pink-100 rounded-lg shadow-md">
+          <div className="lg:-ml-40 dark:bg-gray-900 md:w-[768px] md:p-8 bg-pink-100 rounded-lg shadow-md">
             <h2
               id="hero-title"
-              className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 dark:text-white mb-3 md:mb-4 text-center md:text-left"
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-gray-800 dark:text-white mb-3 md:mb-4 text-center md:text-left"
             >
               Doces caseiros feitos com <span className="text-pink-500">amor</span>
             </h2>
-            <p className="text-base md:text-lg text-gray-600 dark:text-white mb-4 md:mb-6 text-center md:text-left">
+            <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-white mb-4 md:mb-6 text-center md:text-left">
               Experimente os doces mais saborosos da região, preparados com ingredientes selecionados e receitas tradicionais da Dona Márcia.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center md:justify-start">
@@ -44,7 +44,7 @@ const Hero = () => {
             <Image
               src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx2fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=627&q=80"
               alt="Bandeja de doces caseiros variados, feitos artesanalmente por Dona Márcia"
-              className="rounded-xl shadow-xl w-full h-auto object-cover"
+              className="rounded-xl shadow-xl w-full max-w-xs sm:max-w-sm md:max-w-full h-auto object-cover"
               tabIndex={0}
               width={627}
               height={418}

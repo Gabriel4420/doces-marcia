@@ -63,6 +63,7 @@ export default {
       screens: {
         cel: { min: "236px", max: "265px" },
         cel2: { min: "266px", max: "767px" },
+        lg:{min:"1204px"}
       },
       keyframes: {
         zoomIn: {

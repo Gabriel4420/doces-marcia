@@ -23,9 +23,9 @@ export const ProductsTab = () => {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4">
+    <div className="w-full max-w-6xl mx-auto px-1 xs:px-2 sm:px-4">
       <Tabs defaultValue="sushi" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 mb-6 md:mb-8">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 px-2 md:gap-4 mb-6 md:mb-8">
           {tabs.map((item) => (
             <TabsTrigger
               key={item.value}
@@ -39,7 +39,7 @@ export const ProductsTab = () => {
         
         {tabs.map((categoryTab) => (
           <TabsContent key={categoryTab.value} value={categoryTab.value} className="mt-24 md:mt-0">
-            <div className="grid gap-4 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid gap-3 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {categoryTab.products.length > 0 &&
                 categoryTab.products.map((val, index) => (
                   <ProductItem key={index} item={val} />
