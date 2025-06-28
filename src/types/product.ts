@@ -18,10 +18,6 @@ export type Tab = {
   products: Product[];
 };
 
-export type CardProductProperties = {
-  item: Product;
-};
-
 export interface CategoryTabProducts {
   id: number,
   category: string,
