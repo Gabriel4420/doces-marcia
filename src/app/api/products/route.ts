@@ -20,9 +20,11 @@ function saveImage(file: File) {
   const ext = file.name.split('.').pop();
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
   const filePath = path.join(uploadDir, fileName);
-  const buffer = Buffer.from(file.arrayBufferSync());
-  fs.writeFileSync(filePath, buffer);
-  return `/uploads/${fileName}`;
+  return file.arrayBuffer().then((arrayBuffer) => {
+    const buffer = Buffer.from(arrayBuffer);
+    fs.writeFileSync(filePath, buffer);
+    return `/uploads/${fileName}`;
+  });
 }
 
 export async function GET() {
@@ -39,13 +41,7 @@ export async function POST(req: NextRequest) {
     let imageUrl = formData.get('imageUrl') || '';
     const file = formData.get('image');
     if (file && typeof file === 'object' && 'arrayBuffer' in file) {
-      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-      const ext = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-      const filePath = path.join(uploadDir, fileName);
-      const buffer = Buffer.from(await file.arrayBuffer());
-      fs.writeFileSync(filePath, buffer);
-      imageUrl = `/uploads/${fileName}`;
+      imageUrl = await saveImage(file);
     }
     const products = readProducts();
     const newProduct = { id: Date.now(), name, category, image: imageUrl };
@@ -73,13 +69,7 @@ export async function PUT(req: NextRequest) {
     let imageUrl = formData.get('imageUrl') || '';
     const file = formData.get('image');
     if (file && typeof file === 'object' && 'arrayBuffer' in file) {
-      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-      const ext = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-      const filePath = path.join(uploadDir, fileName);
-      const buffer = Buffer.from(await file.arrayBuffer());
-      fs.writeFileSync(filePath, buffer);
-      imageUrl = `/uploads/${fileName}`;
+      imageUrl = await saveImage(file);
     }
     const products = readProducts();
     const idx = products.findIndex((p: any) => p.id === id);
