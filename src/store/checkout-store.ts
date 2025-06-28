@@ -1,8 +1,8 @@
-import { Address, User } from "@/types/checkout";
+import { Address, CheckoutUser } from "@/types/checkout";
 import { create } from "zustand";
 
 type States = {
-  user: User;
+  user: CheckoutUser;
   address: Address;
 };
 
