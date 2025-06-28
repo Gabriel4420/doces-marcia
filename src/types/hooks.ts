@@ -14,7 +14,7 @@ export type Action =
       toastId?: string;
     };
 
-export interface State {
+export interface HooksState {
   toasts: ToasterToast[];
 }
 
