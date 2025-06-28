@@ -1,5 +1,5 @@
 import { getAllProducts } from "@/services/product";
-import { Tabs } from "@/types/product";
+import { Tabs } from "@/types/tabs";
 
 export async function getTabs(): Promise<Tabs> {
   const products = await getAllProducts();
