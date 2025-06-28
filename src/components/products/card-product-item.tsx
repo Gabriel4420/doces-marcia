@@ -8,7 +8,7 @@ export const ProductItem = ({ item }: CardProductProperties) => {
   // Função para abrir WhatsApp com mensagem personalizada
   const handleWhatsapp = () => {
     const phone = "5517991271906"; // Número atualizado
-    const message = `Olá! Gostaria de saber mais sobre o produto: ${item.name}`;
+    const message = `Olá! Gostaria de saber mais sobre o ${item.category}: ${item.name}`;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
