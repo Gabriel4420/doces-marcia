@@ -3,12 +3,29 @@
 import { Button } from "@/components/ui/button";
 import { CardProductProperties } from "@/types/tabs";
 import { ShoppingCart } from "lucide-react";
+import { useEffect, useState } from "react";
+
+const getCategories = async () => {
+  const res = await fetch("/api/categories");
+  const data = await res.json();
+  return data;
+};
 
 export const ProductItem = ({ item }: CardProductProperties) => {
+  const [categories, setCategories] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const categories = await getCategories();
+      setCategories(categories);
+    };
+    fetchCategories();
+  }, []);
+  const category = categories.find((c: any) => c.id === item.categoryId);
+
   // Função para abrir WhatsApp com mensagem personalizada
   const handleWhatsapp = () => {
     const phone = "5517991271906"; // Número atualizado
-    const message = `Olá! Gostaria de saber mais sobre o ${item.category}: ${item.name}`;
+    const message = `Olá! Gostaria de saber mais sobre o ${category?.name}: ${item.name}`;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank");
   };
 

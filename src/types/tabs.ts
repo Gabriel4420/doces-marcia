@@ -1,5 +1,10 @@
 import { Product } from "./product";
 
+export interface Category {
+  id: string;
+  name: string;
+}
+
 export type Tabs = Array<{
   title: string;
   value: string;
@@ -17,7 +22,7 @@ export type CardProductProperties = {
 };
 
 export interface CategoryTabProducts {
-  id: number;
+  id: string;
   category: string;
   image: string;
   name: string;

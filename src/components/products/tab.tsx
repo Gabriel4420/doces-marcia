@@ -32,11 +32,19 @@ export const ProductsTab = () => {
     return <div className="w-full max-w-6xl mx-auto px-1 xs:px-2 sm:px-4 py-10 text-center">Carregando produtos...</div>;
   }
 
+  if (!Array.isArray(categories)) {
+    return (
+      <div className="w-full max-w-6xl mx-auto px-1 xs:px-2 sm:px-4 py-10 text-center text-red-500">
+        Erro ao carregar categorias. Tente novamente mais tarde.
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-6xl mx-auto px-1 xs:px-2 sm:px-4">
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 px-2 md:gap-4 mb-6 md:mb-8">
-          {categories.map((cat) => (
+          {Array.isArray(categories) && categories.map((cat) => (
             <TabsTrigger
               key={cat.name}
               value={cat.name}
@@ -46,13 +54,16 @@ export const ProductsTab = () => {
             </TabsTrigger>
           ))}
         </TabsList>
-        {categories.map((cat) => (
+        {Array.isArray(categories) && categories.map((cat) => (
           <TabsContent key={cat.name} value={cat.name} className="mt-24 md:mt-0">
             <div className="grid gap-3 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {products.filter((p) => p.category === cat.name).length > 0 ? (
+              {products.filter((p) => p.categoryId === cat.id).length > 0 ? (
                 products
-                  .filter((p) => p.category === cat.name)
-                  .map((val, index) => <ProductItem key={val.id || index} item={val} />)
+                  .filter((p) => p.categoryId === cat.id)
+                  .map((val, index) => {
+                    console.log(val)
+                    return (<ProductItem key={val.id || index} item={val} />)
+                  })
               ) : (
                 <div className="flex flex-col items-center justify-center py-8 md:py-12">
                   <ErrorHandler products={[]} title={cat.name} value={cat.name} />

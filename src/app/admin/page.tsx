@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ModeToggle } from "@/components/theme-toggle";
-import { ShoppingCart, Folder, MessageCircle, Menu, LogOut } from "lucide-react";
+import { ShoppingCart, Folder, MessageCircle, Menu, LogOut, Pencil, Trash } from "lucide-react";
 
 const TABS = ["Produtos", "Categorias", "Depoimentos"];
 
@@ -14,7 +14,7 @@ export default function AdminPage() {
   const { isLoggedIn, user, logout } = useAuth();
   const router = useRouter();
   const [tab, setTab] = useState("Produtos");
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState([]);
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -112,6 +112,7 @@ export default function AdminPage() {
     e.preventDefault();
     if (!productData.name || !productData.category) return;
     const formData = new FormData();
+    console.log(productData, formData)
     formData.append("name", productData.name);
     formData.append("category", productData.category);
     if (productData.imageFile) {
@@ -308,23 +309,27 @@ export default function AdminPage() {
                 <p>Carregando...</p>
               ) : (
                 <ul className="space-y-2 w-full">
-                  {products.map((p: any) => (
-                    <li key={p.id} className="bg-white dark:bg-gray-800 rounded p-3 flex justify-between items-center">
-                      <div className="flex items-center gap-4">
-                        {p.image && (
-                          <img src={p.image} alt={p.name} className="w-16 h-16 object-cover rounded border" />
-                        )}
-                        <div>
-                          <span className="font-semibold text-base text-gray-900 dark:text-white">{p.name}</span>
-                          <span className="text-xs text-gray-400 ml-2">({p.category})</span>
+                  {products.map((p: any) => {
+                    const category: any = categories.find((c: any) => c.id === p.categoryId);
+
+                    return (
+                      <li key={p.id} className="bg-white dark:bg-gray-800 rounded p-3 flex justify-between items-center">
+                        <div className="flex items-center gap-4">
+                          {p.image && (
+                            <img src={p.image} alt={p.name} className="w-16 h-16 object-cover rounded border" />
+                          )}
+                          <div>
+                            <span className="font-semibold text-base text-gray-900 dark:text-white">{p.name}</span>
+                            <span className="text-xs text-gray-400 ml-2">({category?.name})</span>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button className="border border-pink-600 text-pink-600 bg-white hover:bg-pink-50" onClick={() => handleEditProduct(p)} type="button">Editar</Button>
-                        <Button className="border border-red-600 text-white bg-red-600 hover:bg-red-700" onClick={() => handleDeleteProduct(p.id)} type="button">Excluir</Button>
-                      </div>
-                    </li>
-                  ))}
+                        <div className="flex gap-2">
+                          <Button className="border border-pink-600 text-pink-600 bg-white hover:bg-pink-50" onClick={() => handleEditProduct(p)} type="button"><Pencil className="w-4 h-4" />Editar</Button>
+                          <Button className="border border-red-600 text-white bg-red-600 hover:bg-red-700" onClick={() => handleDeleteProduct(p.id)} type="button"><Trash className="w-4 h-4" />Excluir</Button>
+                        </div>
+                      </li>
+                    )
+                  })}
                 </ul>
               )}
               {showProductForm ? (
@@ -332,7 +337,7 @@ export default function AdminPage() {
                   <Input placeholder="Nome do produto" value={productData.name} onChange={e => setProductData({ ...productData, name: e.target.value })} />
                   <select className="w-full rounded border p-2" value={productData.category} onChange={e => setProductData({ ...productData, category: e.target.value })}>
                     <option value="">Selecione a categoria</option>
-                    {categories.map((c: any) => <option key={c.id} value={c.name}>{c.name}</option>)}
+                    {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                   <div>
                     <label className="block text-sm font-medium mb-1">Imagem do produto</label>

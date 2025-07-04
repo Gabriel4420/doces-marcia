@@ -1,41 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { prisma } from '@/lib/prisma';
+import { User } from '@/types/auth';
+import { randomUUID } from 'crypto';
 
-const dataFile = path.resolve(process.cwd(), 'src/data/users-admin.json');
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
 
-function readUsers() {
-  if (!fs.existsSync(dataFile)) return [];
-  const data = fs.readFileSync(dataFile, 'utf-8');
-  return JSON.parse(data);
-}
-
-function writeUsers(users: any[]) {
-  fs.writeFileSync(dataFile, JSON.stringify(users, null, 2));
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { name, email, password, type } = body;
-  const users = readUsers();
+  try {
+    const body = await req.json();
+    const { name, email, password, type } = body;
 
-  if (type === 'register') {
-    if (users.some((u: any) => u.email === email)) {
-      return NextResponse.json({ error: 'Email já cadastrado' }, { status: 400 });
+    if (type === 'register') {
+      const existing = await prisma.user.findUnique({ where: { email } });
+      if (existing) {
+        return new NextResponse(JSON.stringify({ error: 'Email já cadastrado' }), {
+          status: 400,
+          headers: corsHeaders,
+        });
+      }
+      await prisma.user.create({
+        data: { id: randomUUID(), name, email, password },
+      });
+      return new NextResponse(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: corsHeaders,
+      });
     }
-    const newUser = { id: Date.now(), name, email, password };
-    users.push(newUser);
-    writeUsers(users);
-    return NextResponse.json({ success: true });
-  }
 
-  if (type === 'login') {
-    const user = users.find((u: any) => u.email === email && u.password === password);
-    if (!user) {
-      return NextResponse.json({ error: 'Email ou senha incorretos' }, { status: 401 });
+    if (type === 'login') {
+      const user = await prisma.user.findUnique({ where: { email, password } });
+      if (!user) {
+        return new NextResponse(JSON.stringify({ error: 'Email ou senha incorretos' }), {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+      return new NextResponse(JSON.stringify({ id: user.id, name: user.name, email: user.email }), {
+        status: 200,
+        headers: corsHeaders,
+      });
     }
-    return NextResponse.json({ id: user.id, name: user.name, email: user.email });
-  }
 
-  return NextResponse.json({ error: 'Tipo de operação inválido' }, { status: 400 });
+    return new NextResponse(JSON.stringify({ error: 'Tipo de operação inválido' }), {
+      status: 400,
+      headers: corsHeaders,
+    });
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: 'Erro ao processar requisição de usuário.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
+  }
 } 

@@ -1,47 +1,88 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { prisma } from '@/lib/prisma';
+import { Category } from '@/types/tabs';
+import { randomUUID } from 'crypto';
 
-const dataFile = path.resolve(process.cwd(), 'src/data/categories-admin.json');
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
 
-function readCategories() {
-  if (!fs.existsSync(dataFile)) return [];
-  const data = fs.readFileSync(dataFile, 'utf-8');
-  return JSON.parse(data);
-}
-
-function writeCategories(categories: any[]) {
-  fs.writeFileSync(dataFile, JSON.stringify(categories, null, 2));
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
 }
 
 export async function GET() {
-  const categories = readCategories();
-  return NextResponse.json(categories);
+  try {
+    const categories = await prisma.category.findMany();
+    return new NextResponse(JSON.stringify(categories), {
+      status: 200,
+      headers: corsHeaders,
+    });
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: 'Erro ao buscar categorias.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const categories = readCategories();
-  const newCategory = { ...body, id: Date.now() };
-  categories.push(newCategory);
-  writeCategories(categories);
-  return NextResponse.json(newCategory, { status: 201 });
+  try {
+    const body = await req.json();
+    const newCategory = await prisma.category.create({
+      data: {
+        ...body,
+        id: randomUUID(),
+      },
+    });
+    return new NextResponse(JSON.stringify(newCategory), {
+      status: 201,
+      headers: corsHeaders,
+    });
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: 'Erro ao criar categoria.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
+  }
 }
 
 export async function PUT(req: NextRequest) {
-  const body = await req.json();
-  const categories = readCategories();
-  const idx = categories.findIndex((c: any) => c.id === body.id);
-  if (idx === -1) return NextResponse.json({ error: 'Categoria não encontrada' }, { status: 404 });
-  categories[idx] = { ...categories[idx], ...body };
-  writeCategories(categories);
-  return NextResponse.json(categories[idx]);
+  try {
+    const body = await req.json();
+    const updatedCategory = await prisma.category.update({
+      where: { id: body.id },
+      data: { name: body.name },
+    });
+    return new NextResponse(JSON.stringify(updatedCategory), {
+      status: 200,
+      headers: corsHeaders,
+    });
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: 'Erro ao atualizar categoria.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
+  }
 }
 
 export async function DELETE(req: NextRequest) {
-  const { id } = await req.json();
-  let categories = readCategories();
-  categories = categories.filter((c: any) => c.id !== id);
-  writeCategories(categories);
-  return NextResponse.json({ success: true });
+  try {
+    const { id } = await req.json();
+    await prisma.category.delete({ where: { id } });
+    return new NextResponse(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: corsHeaders,
+    });
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: 'Erro ao deletar categoria.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
+  }
 } 

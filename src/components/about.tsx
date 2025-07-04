@@ -19,9 +19,7 @@ const About = () => {
                             tabIndex={0}
                             aria-label="Retrato de Dona Márcia, confeiteira experiente e fundadora da doceria."
                           />
-                        <div className="absolute -bottom-2 -right-2 bg-pink-500 dark:bg-gray-800 text-white font-bold py-1 md:py-2 px-3 md:px-5 w-[100px] md:w-[135px] flex items-center justify-center rounded-full shadow-lg text-xs md:text-sm">
-                            <LucideAward className="text-white mr-1 md:mr-2 w-3 h-3 md:w-4 md:h-4" aria-hidden="true" /> 25 anos
-                        </div>
+                        
                     </div>
                 </div>
                 <div className="w-full md:w-2/3 md:pl-8 lg:pl-12">

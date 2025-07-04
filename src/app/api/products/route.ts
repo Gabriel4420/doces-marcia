@@ -1,98 +1,149 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { Product } from '@/types/product';
+import { randomUUID } from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
-const dataFile = path.resolve(process.cwd(), 'src/data/products-admin.json');
 const uploadDir = path.resolve(process.cwd(), 'public/uploads');
 
-function readProducts() {
-  if (!fs.existsSync(dataFile)) return [];
-  const data = fs.readFileSync(dataFile, 'utf-8');
-  return JSON.parse(data);
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
 }
 
-function writeProducts(products: any[]) {
-  fs.writeFileSync(dataFile, JSON.stringify(products, null, 2));
-}
-
-function saveImage(file: File) {
+async function saveImage(file: File) {
   if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
   const ext = file.name.split('.').pop();
   const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
   const filePath = path.join(uploadDir, fileName);
-  return file.arrayBuffer().then((arrayBuffer) => {
-    const buffer = Buffer.from(arrayBuffer);
-    fs.writeFileSync(filePath, buffer);
-    return `/uploads/${fileName}`;
-  });
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  fs.writeFileSync(filePath, buffer);
+  return `/uploads/${fileName}`;
 }
 
 export async function GET() {
-  const products = readProducts();
-  return NextResponse.json(products);
+  try {
+    const products = await prisma.product.findMany();
+    return new NextResponse(JSON.stringify(products), {
+      status: 200,
+      headers: corsHeaders,
+    });
+  } catch (error) {
+    console.log(error)
+    return new NextResponse(JSON.stringify({ error: 'Erro ao buscar produtos.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const contentType = req.headers.get('content-type') || '';
-  if (contentType.includes('multipart/form-data')) {
-    const formData = await req.formData();
-    const name = formData.get('name');
-    const category = formData.get('category');
-    let imageUrl = formData.get('imageUrl') || '';
-    const file = formData.get('image');
-    if (file && typeof file === 'object' && 'arrayBuffer' in file) {
-      imageUrl = await saveImage(file);
+  try {
+    const contentType = req.headers.get('content-type') || '';
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await req.formData();
+      const name = formData.get('name')?.toString() || '';
+      const categoryId = formData.get('category')?.toString() || '';
+      let imageUrl = '';
+      const file = formData.get('image');
+      if (file && typeof file === 'object' && 'arrayBuffer' in file) {
+        imageUrl = await saveImage(file);
+      }
+      const newProduct = await prisma.product.create({
+        data: {
+        id: randomUUID(),
+          name,
+          categoryId,
+          image: imageUrl,
+        },
+      });
+      return new NextResponse(JSON.stringify(newProduct), {
+        status: 201,
+        headers: corsHeaders,
+      });
+    } else {
+      const body = await req.json();
+      if ('id' in body) delete body.id;
+      const newProduct = await prisma.product.create({
+        data: {
+          ...body,
+        },
+      });
+      return new NextResponse(JSON.stringify(newProduct), {
+        status: 201,
+        headers: corsHeaders,
+      });
     }
-    const products = readProducts();
-    const newProduct = { id: Date.now(), name, category, image: imageUrl };
-    products.push(newProduct);
-    writeProducts(products);
-    return NextResponse.json(newProduct, { status: 201 });
-  } else {
-    // fallback para JSON
-    const body = await req.json();
-    const products = readProducts();
-    const newProduct = { id: Date.now(), name: body.name, category: body.category, image: body.image };
-    products.push(newProduct);
-    writeProducts(products);
-    return NextResponse.json(newProduct, { status: 201 });
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: 'Erro ao criar produto.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
   }
 }
 
 export async function PUT(req: NextRequest) {
-  const contentType = req.headers.get('content-type') || '';
-  if (contentType.includes('multipart/form-data')) {
-    const formData = await req.formData();
-    const id = parseInt((formData.get('id') ?? '').toString());
-    const name = formData.get('name');
-    const category = formData.get('category');
-    let imageUrl = formData.get('imageUrl') || '';
-    const file = formData.get('image');
-    if (file && typeof file === 'object' && 'arrayBuffer' in file) {
-      imageUrl = await saveImage(file);
+  try {
+    const contentType = req.headers.get('content-type') || '';
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await req.formData();
+      const id = formData.get('id')?.toString() || '';
+      const name = formData.get('name')?.toString() || '';
+      const categoryId = formData.get('category')?.toString() || '';
+      let imageUrl = formData.get('imageUrl')?.toString() || '';
+      const file = formData.get('image');
+      if (file && typeof file === 'object' && 'arrayBuffer' in file) {
+        imageUrl = await saveImage(file);
+      }
+      const updatedProduct = await prisma.product.update({
+        where: { id },
+        data: { name, categoryId, image: imageUrl },
+      });
+      return new NextResponse(JSON.stringify(updatedProduct), {
+        status: 200,
+        headers: corsHeaders,
+      });
+    } else {
+      const body = await req.json();
+      const updatedProduct = await prisma.product.update({
+        where: { id: body.id },
+        data: { name: body.name, categoryId: body.categoryId, image: body.image },
+      });
+      return new NextResponse(JSON.stringify(updatedProduct), {
+        status: 200,
+        headers: corsHeaders,
+      });
     }
-    const products = readProducts();
-    const idx = products.findIndex((p: any) => p.id === id);
-    if (idx === -1) return NextResponse.json({ error: 'Produto não encontrado' }, { status: 404 });
-    products[idx] = { ...products[idx], name, category, image: imageUrl };
-    writeProducts(products);
-    return NextResponse.json(products[idx]);
-  } else {
-    // fallback para JSON
-    const body = await req.json();
-    const products = readProducts();
-    const idx = products.findIndex((p: any) => p.id === body.id);
-    if (idx === -1) return NextResponse.json({ error: 'Produto não encontrado' }, { status: 404 });
-    products[idx] = { ...products[idx], name: body.name, category: body.category, image: body.image };
-    writeProducts(products);
-    return NextResponse.json(products[idx]);
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: 'Erro ao atualizar produto.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
   }
 }
 
 export async function DELETE(req: NextRequest) {
-  const { id } = await req.json();
-  let products = readProducts();
-  products = products.filter((p: any) => p.id !== id);
-  writeProducts(products);
-  return NextResponse.json({ success: true });
+  try {
+    const { id } = await req.json();
+    await prisma.product.delete({ where: { id } });
+    return new NextResponse(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: corsHeaders,
+    });
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: 'Erro ao deletar produto.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
+  }
 } 

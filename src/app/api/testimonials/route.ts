@@ -1,54 +1,95 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { Testimonial } from '@/types/testimonial';
+import { randomUUID } from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
-const dataFile = path.resolve(process.cwd(), 'src/data/testimonials-admin.json');
 const uploadDir = path.resolve(process.cwd(), 'public/uploads');
 
-function readTestimonials() {
-  if (!fs.existsSync(dataFile)) return [];
-  const data = fs.readFileSync(dataFile, 'utf-8');
-  return JSON.parse(data);
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
 }
 
-function writeTestimonials(testimonials: any[]) {
-  fs.writeFileSync(dataFile, JSON.stringify(testimonials, null, 2));
+async function saveImage(file: File) {
+  if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+  const ext = file.name.split('.').pop();
+  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+  const filePath = path.join(uploadDir, fileName);
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  fs.writeFileSync(filePath, buffer);
+  return `/uploads/${fileName}`;
 }
 
 export async function GET() {
-  const testimonials = readTestimonials();
-  return NextResponse.json(testimonials);
+  try {
+    const testimonials = await prisma.testimonial.findMany();
+    console.log(testimonials)
+    return new NextResponse(JSON.stringify(testimonials), {
+      status: 200,
+      headers: corsHeaders,
+    });
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: 'Erro ao buscar depoimentos.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const contentType = req.headers.get('content-type') || '';
-  if (contentType.includes('multipart/form-data')) {
-    const formData = await req.formData();
-    let imageUrl = '';
-    const file = formData.get('image');
-    if (file && typeof file === 'object' && 'arrayBuffer' in file) {
-      if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-      const ext = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-      const filePath = path.join(uploadDir, fileName);
-      const buffer = Buffer.from(await file.arrayBuffer());
-      fs.writeFileSync(filePath, buffer);
-      imageUrl = `/uploads/${fileName}`;
+  try {
+    const contentType = req.headers.get('content-type') || '';
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await req.formData();
+      let imageUrl = '';
+      const file = formData.get('image');
+      if (file && typeof file === 'object' && 'arrayBuffer' in file) {
+        imageUrl = await saveImage(file);
+      }
+      const newTestimonial = await prisma.testimonial.create({
+        data: { id: randomUUID(), image: imageUrl },
+      });
+      return new NextResponse(JSON.stringify(newTestimonial), {
+        status: 201,
+        headers: corsHeaders,
+      });
+    } else {
+      return new NextResponse(JSON.stringify({ error: 'Envie uma imagem.' }), {
+        status: 400,
+        headers: corsHeaders,
+      });
     }
-    const testimonials = readTestimonials();
-    const newTestimonial = { id: Date.now(), image: imageUrl };
-    testimonials.push(newTestimonial);
-    writeTestimonials(testimonials);
-    return NextResponse.json(newTestimonial, { status: 201 });
-  } else {
-    return NextResponse.json({ error: 'Envie uma imagem.' }, { status: 400 });
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: 'Erro ao criar depoimento.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
   }
 }
 
 export async function DELETE(req: NextRequest) {
-  const { id } = await req.json();
-  let testimonials = readTestimonials();
-  testimonials = testimonials.filter((t: any) => t.id !== id);
-  writeTestimonials(testimonials);
-  return NextResponse.json({ success: true });
+  try {
+    const { id } = await req.json();
+    await prisma.testimonial.delete({ where: { id } });
+    return new NextResponse(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: corsHeaders,
+    });
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ error: 'Erro ao deletar depoimento.' }), {
+      status: 500,
+      headers: corsHeaders,
+    });
+  }
 } 

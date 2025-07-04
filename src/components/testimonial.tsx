@@ -6,13 +6,25 @@ import { Star } from "lucide-react";
 const Testimonial = () => {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTestimonials = async () => {
       setLoading(true);
-      const res = await fetch("/api/testimonials");
-      const data = await res.json();
-      setTestimonials(data);
+      setError(null);
+      try {
+        const res = await fetch("/api/testimonials");
+        if (!res.ok) {
+          setError("Erro ao carregar depoimentos.");
+          setTestimonials([]);
+        } else {
+          const data = await res.json();
+          setTestimonials(Array.isArray(data) ? data : []);
+        }
+      } catch (e) {
+        setError("Erro ao carregar depoimentos.");
+        setTestimonials([]);
+      }
       setLoading(false);
     };
     fetchTestimonials();
@@ -37,6 +49,8 @@ const Testimonial = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
           {loading ? (
             <p className="col-span-full text-center">Carregando depoimentos...</p>
+          ) : error ? (
+            <p className="col-span-full text-center text-red-500">{error}</p>
           ) : testimonials.length === 0 ? (
             <p className="col-span-full text-center">Em breve ...</p>
           ) : (

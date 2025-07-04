@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: corsHeaders,
+  });
+}
+
 export async function POST(req: NextRequest) {
   const { name, email, message } = await req.json();
 
@@ -55,8 +68,14 @@ export async function POST(req: NextRequest) {
       text: message,
       html,
     });
-    return NextResponse.json({ success: true });
+    return new NextResponse(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: corsHeaders,
+    });
   } catch (error) {
-    return NextResponse.json({ error: 'Erro ao enviar email', details: error }, { status: 500 });
+    return new NextResponse(JSON.stringify({ error: 'Erro ao enviar email', details: error }), {
+      status: 500,
+      headers: corsHeaders,
+    });
   }
 } 

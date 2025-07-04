@@ -1,4 +1,4 @@
 export interface Testimonial {
-  id: number;
+  id: string;
   image: string;
 } 
