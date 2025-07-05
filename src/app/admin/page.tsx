@@ -12,6 +12,7 @@ import { TestimonialListAdmin } from "@/components/admin/testimonial-list-admin"
 import { ProductModal } from "@/components/admin/modals/product-modal";
 import { CategoryModal } from "@/components/admin/modals/category-modal";
 import { TestimonialModal } from "@/components/admin/modals/testimonial-modal";
+import { DebugInfo } from "@/components/admin/debug-info";
 import { AdminProvider, useAdmin } from "@/contexts/admin-context";
 
 function AdminContent() {
@@ -63,6 +64,8 @@ function AdminContent() {
           {tab === "Produtos" && <ProductListAdmin />}
           {tab === "Categorias" && <CategoryListAdmin />}
           {tab === "Depoimentos" && <TestimonialListAdmin />}
+          
+          
         </div>
       </main>
       

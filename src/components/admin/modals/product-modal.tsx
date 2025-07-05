@@ -44,7 +44,7 @@ export function ProductModal() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleProductSubmit} className="p-6 space-y-4" encType="multipart/form-data">
+        <form onSubmit={handleProductSubmit} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Nome do Produto

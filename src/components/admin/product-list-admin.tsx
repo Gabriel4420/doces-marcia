@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Pencil, Trash, Plus } from "lucide-react";
 import { useAdmin } from "@/contexts/admin-context";
 
-export function ProductListAdmin() {
+export function 
+ProductListAdmin() {
   const {
     products,
     categories,
@@ -53,7 +54,7 @@ export function ProductListAdmin() {
                   </Button>
                   <Button 
                     className="border border-red-600 text-white bg-red-600 hover:bg-red-700" 
-                    onClick={() => handleDeleteProduct(p.id)} 
+                    onClick={() => handleDeleteProduct(p.id, p.image)} 
                     type="button"
                   >
                     <Trash className="w-4 h-4" />

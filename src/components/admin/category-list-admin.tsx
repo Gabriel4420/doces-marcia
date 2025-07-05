@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Pencil, Plus, Trash } from "lucide-react";
 import { useAdmin } from "@/contexts/admin-context";
 
 export function CategoryListAdmin() {
@@ -36,12 +36,14 @@ export function CategoryListAdmin() {
                   className="border border-gray-300 text-gray-700 bg-white hover:bg-gray-50" 
                   onClick={() => handleEditCategory(c)}
                 >
+                  <Pencil className="w-4 h-4" />
                   Editar
                 </Button>
                 <Button 
                   className="border border-red-500 text-red-600 bg-white hover:bg-red-50" 
                   onClick={() => handleDeleteCategory(c.id)}
                 >
+                  <Trash className="w-4 h-4" />
                   Excluir
                 </Button>
               </div>

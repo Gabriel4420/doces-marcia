@@ -1,0 +1,167 @@
+import { useState, useCallback } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { UseSupabaseUploadReturn, UploadResult } from "@/types/supabase";
+
+
+
+export function useSupabaseUpload(): UseSupabaseUploadReturn {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  const uploadImage = useCallback(async (
+    file: File, 
+    bucketName: string = "images"
+  ): Promise<UploadResult | null> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      
+      console.log('Iniciando upload:', { fileName: file.name, fileSize: file.size, bucketName });
+      
+      // Validar tipo de arquivo
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Arquivo deve ser uma imagem');
+      }
+
+      // Validar tamanho (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error('Arquivo deve ter no máximo 5MB');
+      }
+
+      // Verificar se o bucket existe
+      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+      if (bucketsError) {
+        console.error('Erro ao listar buckets:', bucketsError);
+        throw new Error(`Erro ao verificar buckets: ${bucketsError.message}`);
+      }
+
+      const bucketExists = buckets?.some(bucket => bucket.name === bucketName);
+
+      console.log('Bucket existe:', bucketExists);
+      
+      if (!bucketExists) {
+        console.warn(`Bucket '${bucketName}' não encontrado. Buckets disponíveis:`, buckets?.map(b => b.name));
+        // Tentar com bucket padrão se o especificado não existir
+        const defaultBucket = buckets?.[0]?.name || 'images';
+        console.log(`Usando bucket padrão: ${defaultBucket}`);
+        bucketName = defaultBucket;
+      }
+
+      // Gerar nome único para o arquivo
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      const fileExtension = file.name.split('.').pop() || 'jpg';
+      const fileName = `${timestamp}-${randomString}.${fileExtension}`;
+
+      console.log('Fazendo upload para:', { bucketName, fileName });
+
+      // Upload para o Supabase Storage
+      const { data, error: uploadError } = await supabase.storage
+        .from(bucketName)
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error('Erro no upload:', uploadError);
+        throw new Error(`Erro no upload: ${uploadError.message}`);
+      }
+
+      console.log('Upload realizado com sucesso:', data);
+
+      // Obter URL pública
+      const { data: urlData } = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(fileName);
+
+      console.log('URL pública gerada:', urlData.publicUrl);
+
+      return {
+        url: urlData.publicUrl,
+        path: fileName
+      };
+
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido no upload';
+      console.error('Erro no upload da imagem:', err);
+      setError(errorMessage);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const uploadMultipleImages = useCallback(async (
+    files: File[], 
+    bucketName: string = "images"
+  ): Promise<UploadResult[]> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const uploadPromises = files.map(file => uploadImage(file, bucketName));
+      const results = await Promise.all(uploadPromises);
+      
+      // Filtrar resultados nulos (erros)
+      const successfulUploads = results.filter((result): result is UploadResult => result !== null);
+      
+      if (successfulUploads.length !== files.length) {
+        setError('Alguns arquivos não puderam ser enviados');
+      }
+
+      return successfulUploads;
+
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido no upload múltiplo';
+      setError(errorMessage);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, [uploadImage]);
+
+  const deleteImage = useCallback(async (
+    path: string, 
+    bucketName: string = "images"
+  ): Promise<boolean> => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      
+      const { error: deleteError } = await supabase.storage
+        .from(bucketName)
+        .remove([path]);
+
+      if (deleteError) {
+        throw new Error(`Erro ao deletar: ${deleteError.message}`);
+      }
+
+      return true;
+
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido ao deletar';
+      setError(errorMessage);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return {
+    uploadImage,
+    uploadMultipleImages,
+    deleteImage,
+    loading,
+    error,
+    clearError
+  };
+} 

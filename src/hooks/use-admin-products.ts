@@ -1,4 +1,6 @@
 import { useState, useCallback } from "react";
+import { useSupabaseUpload } from "./use-supabase-upload";
+import { toast } from "./use-toast";
 
 export function useAdminProducts() {
   const [products, setProducts] = useState<any[]>([]);
@@ -7,6 +9,8 @@ export function useAdminProducts() {
   const [editProductId, setEditProductId] = useState<number | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const { uploadImage, deleteImage, loading: uploadLoading } = useSupabaseUpload();
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -19,44 +23,124 @@ export function useAdminProducts() {
   const handleProductSubmit = async (e: any) => {
     e.preventDefault();
     if (!productData.name || !productData.category) return;
-    const formData = new FormData();
-    formData.append("name", productData.name);
-    formData.append("category", productData.category);
-    if (productData.imageFile) {
-      formData.append("image", productData.imageFile);
-    } else if (productData.image) {
-      formData.append("imageUrl", productData.image);
+
+    try {
+      let imageUrl = productData.image; // URL existente se estiver editando
+
+      // Se há um arquivo novo para upload
+      if (productData.imageFile) {
+        console.log('Iniciando upload da imagem do produto...');
+        const uploadResult = await uploadImage(productData.imageFile, "images");
+        if (!uploadResult) {
+          console.error('Falha no upload da imagem');
+          throw new Error("Erro no upload da imagem. Verifique o console para mais detalhes.");
+        }
+        imageUrl = uploadResult.url;
+        console.log('Upload da imagem concluído:', imageUrl);
+      }
+
+      // Preparar dados do produto
+      const productPayload = {
+        name: productData.name,
+        categoryId: productData.category,
+        image: imageUrl
+      };
+
+      console.log('Salvando produto:', productPayload);
+
+      if (editProductId) {
+        // Atualizar produto existente
+        const response = await fetch("/api/products", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ 
+            id: editProductId,
+            ...productPayload 
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Erro ao atualizar produto: ${errorData.error || response.statusText}`);
+        }
+        toast({
+          title: "Produto atualizado",
+          description: "O produto foi atualizado com sucesso!",
+          duration: 3000
+        });
+      } else {
+        // Criar novo produto
+        const response = await fetch("/api/products", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(productPayload),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Erro ao criar produto: ${errorData.error || response.statusText}`);
+        }
+        toast({
+          title: "Produto cadastrado",
+          description: "O produto foi criado com sucesso!",
+          duration: 3000
+        });
+      }
+
+      // Limpar formulário
+      setProductData({ name: "", category: "", image: "", imageFile: null });
+      setEditProductId(null);
+      setShowProductForm(false);
+      setImagePreview(null);
+      
+      // Recarregar produtos
+      fetchProducts();
+
+    } catch (error) {
+      console.error("Erro ao salvar produto:", error);
+      alert(`Erro ao salvar produto: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
     }
-    if (editProductId) {
-      formData.append("id", String(editProductId));
-      await fetch("/api/products", {
-        method: "PUT",
-        body: formData,
-      });
-    } else {
-      await fetch("/api/products", {
-        method: "POST",
-        body: formData,
-      });
-    }
-    setProductData({ name: "", category: "", image: "", imageFile: null });
-    setEditProductId(null);
-    setShowProductForm(false);
-    setImagePreview(null);
-    fetchProducts();
   };
 
   const handleEditProduct = (prod: any) => {
-    setProductData({ name: prod.name, category: prod.category, image: prod.image || "", imageFile: null });
+    setProductData({ 
+      name: prod.name, 
+      category: prod.categoryId?.toString() || "", 
+      image: prod.image || "", 
+      imageFile: null 
+    });
     setEditProductId(prod.id);
     setShowProductForm(true);
     setImagePreview(prod.image || null);
   };
 
-  const handleDeleteProduct = async (id: number) => {
+  const handleDeleteProduct = async (id: number, imageUrl?: string) => {
+    // Excluir imagem do bucket se existir
+    if (imageUrl) {
+      try {
+        // Extrair o path do arquivo a partir da URL pública
+        const urlParts = imageUrl.split("/");
+        const fileName = urlParts[urlParts.length - 1];
+        await deleteImage(fileName, "images");
+      } catch (e) {
+        console.warn("Erro ao excluir imagem do bucket:", e);
+      }
+    }
     await fetch("/api/products", {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ id }),
+    });
+    toast({
+      title: "Produto excluído",
+      description: "O produto foi removido com sucesso!",
+      duration: 3000
     });
     fetchProducts();
   };
@@ -80,7 +164,7 @@ export function useAdminProducts() {
     setEditProductId,
     imagePreview,
     setImagePreview,
-    loading,
+    loading: loading || uploadLoading,
     fetchProducts,
     handleProductSubmit,
     handleEditProduct,

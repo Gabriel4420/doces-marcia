@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
 import { useAdmin } from "@/contexts/admin-context";
 
 export function TestimonialListAdmin() {
@@ -32,8 +32,9 @@ export function TestimonialListAdmin() {
               <img src={t.image} alt="Depoimento" className="w-32 h-32 object-cover rounded mb-2 border" />
               <Button 
                 className="text-red-600 border border-red-500 bg-white hover:bg-red-50 text-sm py-1 px-3" 
-                onClick={() => handleDeleteTestimonial(t.id)}
+                onClick={() => handleDeleteTestimonial(t.id, t.image)}
               >
+                <Trash className="w-4 h-4" />
                 Excluir
               </Button>
             </li>

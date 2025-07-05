@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { toast } from "./use-toast";
 
 export function useAdminCategories() {
   const [categories, setCategories] = useState<any[]>([]);
@@ -23,10 +24,20 @@ export function useAdminCategories() {
         method: "PUT",
         body: JSON.stringify({ id: editCategoryId, name: categoryName }),
       });
+      toast({
+        title: "Categoria atualizada",
+        description: "A categoria foi atualizada com sucesso!",
+        duration: 3000
+      });
     } else {
       await fetch("/api/categories", {
         method: "POST",
         body: JSON.stringify({ name: categoryName }),
+      });
+      toast({
+        title: "Categoria cadastrada",
+        description: "A categoria foi criada com sucesso!",
+        duration: 3000
       });
     }
     setCategoryName("");
@@ -45,6 +56,11 @@ export function useAdminCategories() {
     await fetch("/api/categories", {
       method: "DELETE",
       body: JSON.stringify({ id }),
+    });
+    toast({
+      title: "Categoria excluída",
+      description: "A categoria foi removida com sucesso!",
+      duration: 3000
     });
     fetchCategories();
   };
