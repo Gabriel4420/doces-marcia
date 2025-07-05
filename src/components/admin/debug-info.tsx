@@ -90,7 +90,7 @@ export function DebugInfo() {
 
       if (error) {
         console.error('❌ Erro no teste de upload:', error);
-        setDebugInfo(prev => ({
+        setDebugInfo((prev: any) => ({
           ...prev,
           testUpload: { error: error.message, timestamp: new Date().toISOString() }
         }));
@@ -102,7 +102,7 @@ export function DebugInfo() {
           .from('images')
           .getPublicUrl(fileName);
 
-        setDebugInfo(prev => ({
+        setDebugInfo((prev: any) => ({
           ...prev,
           testUpload: { 
             success: true, 
@@ -115,7 +115,7 @@ export function DebugInfo() {
 
     } catch (error) {
       console.error('❌ Erro no teste de upload:', error);
-      setDebugInfo(prev => ({
+      setDebugInfo((prev: any) => ({
         ...prev,
         testUpload: { 
           error: error instanceof Error ? error.message : 'Erro desconhecido',
