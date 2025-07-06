@@ -1,23 +1,39 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { AuthContextType, User, AuthProviderProps } from "@/types/auth";
+import { AuthContextType, UserPublic, AuthProviderProps } from "@/types/auth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserPublic | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Verificar se há usuário logado no localStorage ao carregar
+  // Buscar usuário autenticado ao carregar
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    const savedLoginStatus = localStorage.getItem("isLoggedIn");
-
-    if (savedUser && savedLoginStatus === "true") {
-      setUser(JSON.parse(savedUser));
-      setIsLoggedIn(true);
-    }
+    const fetchUser = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+          setIsLoggedIn(true);
+          localStorage.setItem("user", JSON.stringify(data.user));
+        } else {
+          setUser(null);
+          setIsLoggedIn(false);
+          localStorage.removeItem("user");
+        }
+      } catch {
+        setUser(null);
+        setIsLoggedIn(false);
+        localStorage.removeItem("user");
+      }
+      setLoading(false);
+    };
+    fetchUser();
   }, []);
 
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
@@ -28,6 +44,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         body: JSON.stringify({ name, email, password, type: "register" }),
       });
       if (!res.ok) return false;
+      // Login automático após registro
+      await login(email, password);
       return true;
     } catch (error) {
       console.error("Erro no registro:", error);
@@ -43,28 +61,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         body: JSON.stringify({ email, password, type: "login" }),
       });
       if (!res.ok) return false;
-      const userData = await res.json();
-      setUser(userData);
-      setIsLoggedIn(true);
-      localStorage.setItem("user", JSON.stringify(userData));
-      localStorage.setItem("isLoggedIn", "true");
-      if (router) {
-        router.push("/");
+      // Buscar usuário autenticado após login
+      const meRes = await fetch("/api/auth/me");
+      if (meRes.ok) {
+        const data = await meRes.json();
+        setUser(data.user);
+        setIsLoggedIn(true);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        if (router) {
+          router.push("/");
+        } else {
+          window.location.href = "/";
+        }
+        return true;
       } else {
-        window.location.href = "/";
+        setUser(null);
+        setIsLoggedIn(false);
+        localStorage.removeItem("user");
+        return false;
       }
-      return true;
     } catch (error) {
       console.error("Erro no login:", error);
       return false;
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {}
     setUser(null);
     setIsLoggedIn(false);
     localStorage.removeItem("user");
-    localStorage.removeItem("isLoggedIn");
   };
 
   const value: AuthContextType = {
@@ -73,6 +101,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     login,
     logout,
     register,
+    loading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

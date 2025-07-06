@@ -29,14 +29,11 @@ export function useAdminProducts() {
 
       // Se há um arquivo novo para upload
       if (productData.imageFile) {
-        console.log('Iniciando upload da imagem do produto...');
         const uploadResult = await uploadImage(productData.imageFile, "images");
         if (!uploadResult) {
-          console.error('Falha no upload da imagem');
           throw new Error("Erro no upload da imagem. Verifique o console para mais detalhes.");
         }
         imageUrl = uploadResult.url;
-        console.log('Upload da imagem concluído:', imageUrl);
       }
 
       // Preparar dados do produto
@@ -46,7 +43,6 @@ export function useAdminProducts() {
         image: imageUrl
       };
 
-      console.log('Salvando produto:', productPayload);
 
       if (editProductId) {
         // Atualizar produto existente
@@ -55,9 +51,9 @@ export function useAdminProducts() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ 
+          body: JSON.stringify({
             id: editProductId,
-            ...productPayload 
+            ...productPayload
           }),
         });
 
@@ -96,7 +92,7 @@ export function useAdminProducts() {
       setEditProductId(null);
       setShowProductForm(false);
       setImagePreview(null);
-      
+
       // Recarregar produtos
       fetchProducts();
 
@@ -107,11 +103,11 @@ export function useAdminProducts() {
   };
 
   const handleEditProduct = (prod: any) => {
-    setProductData({ 
-      name: prod.name, 
-      category: prod.categoryId?.toString() || "", 
-      image: prod.image || "", 
-      imageFile: null 
+    setProductData({
+      name: prod.name,
+      category: prod.categoryId?.toString() || "",
+      image: prod.image || "",
+      imageFile: null
     });
     setEditProductId(prod.id);
     setShowProductForm(true);

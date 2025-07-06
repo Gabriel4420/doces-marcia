@@ -15,7 +15,7 @@ export function SidebarAdmin() {
         <div className="flex flex-col items-center mb-10">
           <img src="/images/logo.jpg" alt="Logo" className="w-32 h-32 rounded-full border-4 border-pink-200 shadow mb-2" />
           <h2 className="text-lg font-bold text-pink-600 text-center font-pacifico">Delicias da Márcia</h2>
-          <span className="text-xs font-bold text-gray-500 dark:text-gray-300 mt-1">usuário: {user?.name}</span>
+          <span className="text-xs font-bold text-gray-500 dark:text-gray-300 mt-1">Usuário: {user?.name}</span>
         </div>
         <nav className="flex flex-col gap-2 flex-1">
           {TABS.map((t) => (
@@ -53,7 +53,7 @@ export function SidebarAdmin() {
             <div className="flex flex-col items-center mb-10">
               <img src="/images/author-dona-marcia-delicias-da-marcia.jpg" alt="Logo" className="w-16 h-16 rounded-full border-4 border-pink-200 shadow mb-2" />
               <h2 className="text-lg font-bold text-pink-600 text-center font-pacifico">Doces da Márcia</h2>
-              <span className="text-xs text-gray-500 dark:text-gray-300 mt-1">{user?.name}</span>
+              <span className="text-xs text-gray-500 dark:text-gray-300 mt-1">Usuário: {user?.name}</span>
             </div>
             <nav className="flex flex-col gap-2 flex-1">
               {TABS.map((t) => (

@@ -13,7 +13,7 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
   }, []);
 
   const uploadImage = useCallback(async (
-    file: File, 
+    file: File,
     bucketName: string = "images"
   ): Promise<UploadResult | null> => {
     setLoading(true);
@@ -21,9 +21,9 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
 
     try {
       const supabase = createClient();
-      
-      console.log('Iniciando upload:', { fileName: file.name, fileSize: file.size, bucketName });
-      
+
+
+
       // Validar tipo de arquivo
       if (!file.type.startsWith('image/')) {
         throw new Error('Arquivo deve ser uma imagem');
@@ -43,13 +43,13 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
 
       const bucketExists = buckets?.some(bucket => bucket.name === bucketName);
 
-      console.log('Bucket existe:', bucketExists);
-      
+
+
       if (!bucketExists) {
         console.warn(`Bucket '${bucketName}' não encontrado. Buckets disponíveis:`, buckets?.map(b => b.name));
         // Tentar com bucket padrão se o especificado não existir
         const defaultBucket = buckets?.[0]?.name || 'images';
-        console.log(`Usando bucket padrão: ${defaultBucket}`);
+
         bucketName = defaultBucket;
       }
 
@@ -59,7 +59,7 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
       const fileExtension = file.name.split('.').pop() || 'jpg';
       const fileName = `${timestamp}-${randomString}.${fileExtension}`;
 
-      console.log('Fazendo upload para:', { bucketName, fileName });
+
 
       // Upload para o Supabase Storage
       const { data, error: uploadError } = await supabase.storage
@@ -74,14 +74,14 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
         throw new Error(`Erro no upload: ${uploadError.message}`);
       }
 
-      console.log('Upload realizado com sucesso:', data);
+
 
       // Obter URL pública
       const { data: urlData } = supabase.storage
         .from(bucketName)
         .getPublicUrl(fileName);
 
-      console.log('URL pública gerada:', urlData.publicUrl);
+
 
       return {
         url: urlData.publicUrl,
@@ -99,7 +99,7 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
   }, []);
 
   const uploadMultipleImages = useCallback(async (
-    files: File[], 
+    files: File[],
     bucketName: string = "images"
   ): Promise<UploadResult[]> => {
     setLoading(true);
@@ -108,10 +108,10 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
     try {
       const uploadPromises = files.map(file => uploadImage(file, bucketName));
       const results = await Promise.all(uploadPromises);
-      
+
       // Filtrar resultados nulos (erros)
       const successfulUploads = results.filter((result): result is UploadResult => result !== null);
-      
+
       if (successfulUploads.length !== files.length) {
         setError('Alguns arquivos não puderam ser enviados');
       }
@@ -128,7 +128,7 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
   }, [uploadImage]);
 
   const deleteImage = useCallback(async (
-    path: string, 
+    path: string,
     bucketName: string = "images"
   ): Promise<boolean> => {
     setLoading(true);
@@ -136,7 +136,7 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
 
     try {
       const supabase = createClient();
-      
+
       const { error: deleteError } = await supabase.storage
         .from(bucketName)
         .remove([path]);

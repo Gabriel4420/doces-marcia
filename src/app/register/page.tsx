@@ -46,16 +46,10 @@ const RegisterPage = () => {
           description: "Sua conta foi criada. Redirecionando para painel admin...",
           variant: "default",
         });
-        
         setNome("");
         setEmail("");
         setSenha("");
         setConfirmarSenha("");
-        
-        // Redirecionar para painel admin após 2 segundos
-        setTimeout(() => {
-          router.push("/admin");
-        }, 2000);
       } else {
         toast({
           title: "Erro no cadastro ❌",

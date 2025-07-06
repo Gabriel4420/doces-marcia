@@ -27,7 +27,7 @@ export async function GET() {
       headers: corsHeaders,
     });
   } catch (error) {
-    console.log(error)
+
     return new NextResponse(JSON.stringify({ error: 'Erro ao buscar produtos.' }), {
       status: 500,
       headers: corsHeaders,
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { name, categoryId, image } = body;
-    
+
     if (!name || !categoryId) {
       return new NextResponse(JSON.stringify({ error: 'Nome e categoria são obrigatórios.' }), {
         status: 400,
@@ -76,7 +76,7 @@ export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
     const { id, name, categoryId, image } = body;
-    
+
     if (!id || !name || !categoryId) {
       return new NextResponse(JSON.stringify({ error: 'ID, nome e categoria são obrigatórios.' }), {
         status: 400,
@@ -86,10 +86,10 @@ export async function PUT(req: NextRequest) {
 
     const updatedProduct = await prisma.product.update({
       where: { id },
-      data: { 
-        name, 
-        categoryId: categoryId.toString(), 
-        image: image || null 
+      data: {
+        name,
+        categoryId: categoryId.toString(),
+        image: image || null
       },
       include: {
         category: true
@@ -112,7 +112,7 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const { id } = await req.json();
-    
+
     if (!id) {
       return new NextResponse(JSON.stringify({ error: 'ID é obrigatório.' }), {
         status: 400,

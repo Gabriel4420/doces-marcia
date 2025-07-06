@@ -40,7 +40,6 @@ export function validateSupabaseConfig() {
 // Log de configuração (apenas em desenvolvimento)
 if (process.env.NODE_ENV === 'development') {
   const validation = validateSupabaseConfig();
-  console.log('🔧 Supabase Config Validation:', validation);
   
   if (!validation.isValid) {
     console.error('❌ Supabase Config Errors:', validation.errors);

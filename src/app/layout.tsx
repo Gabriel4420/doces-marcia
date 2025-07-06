@@ -10,6 +10,10 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Delicias da Márcia - Doces Caseiros",
   description: "Doces caseiros feitos com amor pela Dona Márcia. Experimente os sabores mais deliciosos da região!",
+  icons: {
+    icon: "/logo.svg",
+  },
+  
 };
 
 export default function RootLayout({

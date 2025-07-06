@@ -11,7 +11,7 @@ export function DebugInfo() {
     async function checkSupabaseStorage() {
       try {
         const supabase = createClient();
-        
+
         // Verificar configuração básica
         const config = {
           url: process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -21,7 +21,7 @@ export function DebugInfo() {
 
         // Verificar buckets disponíveis
         const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
-        
+
         // Verificar permissões do bucket 'images'
         let imagesBucketInfo = null;
         if (buckets?.some(b => b.name === 'images')) {
@@ -29,7 +29,7 @@ export function DebugInfo() {
             const { data: files, error: listError } = await supabase.storage
               .from('images')
               .list('', { limit: 5 });
-            
+
             imagesBucketInfo = {
               exists: true,
               filesCount: files?.length || 0,
@@ -71,14 +71,13 @@ export function DebugInfo() {
 
     try {
       const supabase = createClient();
-      
+
       // Gerar nome único para o arquivo de teste
       const timestamp = Date.now();
       const randomString = Math.random().toString(36).substring(2, 15);
       const fileExtension = testFile.name.split('.').pop() || 'jpg';
       const fileName = `test-${timestamp}-${randomString}.${fileExtension}`;
 
-      console.log('🧪 Testando upload:', { fileName, fileSize: testFile.size, fileType: testFile.type });
 
       // Tentar upload
       const { data, error } = await supabase.storage
@@ -95,8 +94,8 @@ export function DebugInfo() {
           testUpload: { error: error.message, timestamp: new Date().toISOString() }
         }));
       } else {
-        console.log('✅ Teste de upload bem-sucedido:', data);
-        
+
+
         // Tentar obter URL pública
         const { data: urlData } = supabase.storage
           .from('images')
@@ -104,11 +103,11 @@ export function DebugInfo() {
 
         setDebugInfo((prev: any) => ({
           ...prev,
-          testUpload: { 
-            success: true, 
+          testUpload: {
+            success: true,
             fileName,
             publicUrl: urlData.publicUrl,
-            timestamp: new Date().toISOString() 
+            timestamp: new Date().toISOString()
           }
         }));
       }
@@ -117,9 +116,9 @@ export function DebugInfo() {
       console.error('❌ Erro no teste de upload:', error);
       setDebugInfo((prev: any) => ({
         ...prev,
-        testUpload: { 
+        testUpload: {
           error: error instanceof Error ? error.message : 'Erro desconhecido',
-          timestamp: new Date().toISOString() 
+          timestamp: new Date().toISOString()
         }
       }));
     }
@@ -146,7 +145,7 @@ export function DebugInfo() {
   return (
     <div className="p-4 bg-gray-100 border border-gray-400 rounded text-sm">
       <h3 className="font-bold mb-2">🔧 Debug - Supabase Storage</h3>
-      
+
       {/* Teste de Upload */}
       <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
         <h4 className="font-semibold mb-2">🧪 Teste de Upload</h4>

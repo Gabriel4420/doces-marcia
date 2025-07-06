@@ -2,6 +2,7 @@
 import { LucideCandy, LucideClock, LucideHeart, LucideMail, LucideMapPin, LucidePhone } from "lucide-react";
 import { FaHeart } from "react-icons/fa";
 import { useState } from "react";
+import { Logo } from "@/components/logo";
 
 const Footer = () => {
     const [hoverHeart, setHoverHeart] = useState(false);
@@ -12,8 +13,7 @@ const Footer = () => {
                     {/* Logo e Descrição */}
                     <div className="text-center md:text-left">
                         <div className="flex items-center justify-center md:justify-start mb-3 md:mb-4">
-                            <LucideCandy className="text-2xl md:text-3xl text-pink-500 mr-2" aria-hidden="true" />
-                            <h3 className="text-xl md:text-2xl font-bold text-pink-500">Delicias da Márcia</h3>
+                            <Logo width={120} height={120} className="mr-2" />
                         </div>
                         <p className="text-xs sm:text-sm md:text-base dark:text-gray-300 text-gray-900 mb-4 leading-relaxed">
                             Doces caseiros feitos com amor e ingredientes selecionados. Há mais de 25 anos levando sabor e alegria para sua mesa.

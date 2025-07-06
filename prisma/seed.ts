@@ -22,7 +22,6 @@ async function main() {
     }
   }
 
-  console.log('Categorias populadas com sucesso!');
 }
 
 main()

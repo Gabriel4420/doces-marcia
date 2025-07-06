@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { User } from '@/types/auth';
 import { randomUUID } from 'crypto';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -29,8 +31,13 @@ export async function POST(req: NextRequest) {
           headers: corsHeaders,
         });
       }
+      
+      // Criptografar a senha antes de salvar
+      const saltRounds = 12;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      
       await prisma.user.create({
-        data: { id: randomUUID(), name, email, password },
+        data: { id: randomUUID(), name, email, password: hashedPassword },
       });
       return new NextResponse(JSON.stringify({ success: true }), {
         status: 200,
@@ -39,17 +46,40 @@ export async function POST(req: NextRequest) {
     }
 
     if (type === 'login') {
-      const user = await prisma.user.findUnique({ where: { email, password } });
+      const user = await prisma.user.findUnique({ where: { email } });
       if (!user) {
         return new NextResponse(JSON.stringify({ error: 'Email ou senha incorretos' }), {
           status: 401,
           headers: corsHeaders,
         });
       }
-      return new NextResponse(JSON.stringify({ id: user.id, name: user.name, email: user.email }), {
+      
+      // Verificar se a senha está correta usando bcrypt
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return new NextResponse(JSON.stringify({ error: 'Email ou senha incorretos' }), {
+          status: 401,
+          headers: corsHeaders,
+        });
+      }
+      
+      // Gerar JWT
+      const token = jwt.sign(
+        { id: user.id, name: user.name, email: user.email },
+        process.env.JWT_SECRET || 'secret',
+        { expiresIn: '7d' }
+      );
+      // Setar cookie httpOnly, Secure só em produção
+      const isProd = process.env.NODE_ENV === 'production';
+      const cookie = `token=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=Strict${isProd ? '; Secure' : ''}`;
+      const response = new NextResponse(JSON.stringify({ success: true }), {
         status: 200,
-        headers: corsHeaders,
+        headers: {
+          ...corsHeaders,
+          'Set-Cookie': cookie,
+        },
       });
+      return response;
     }
 
     return new NextResponse(JSON.stringify({ error: 'Tipo de operação inválido' }), {

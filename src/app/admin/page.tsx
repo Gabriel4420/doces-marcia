@@ -16,16 +16,16 @@ import { DebugInfo } from "@/components/admin/debug-info";
 import { AdminProvider, useAdmin } from "@/contexts/admin-context";
 
 function AdminContent() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, loading } = useAuth();
   const router = useRouter();
-  const { tab, loading, fetchProducts, fetchCategories, fetchTestimonials } = useAdmin();
+  const { tab, fetchProducts, fetchCategories, fetchTestimonials } = useAdmin();
 
   // Redirecionamento se não estiver logado
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!loading && !isLoggedIn) {
       router.replace("/login");
     }
-  }, [isLoggedIn, router]);
+  }, [isLoggedIn, loading, router]);
 
   // Buscar dados ao montar
   useEffect(() => {
@@ -34,7 +34,7 @@ function AdminContent() {
     fetchTestimonials();
   }, [fetchProducts, fetchCategories, fetchTestimonials]);
 
-  if (!isLoggedIn) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-100 to-pink-200 dark:from-gray-900 dark:to-gray-800 animate-fade-in">
         <div className="w-full max-w-md space-y-4 animate-zoom-in">
@@ -46,6 +46,10 @@ function AdminContent() {
         </div>
       </div>
     );
+  }
+
+  if (!isLoggedIn) {
+    return null;
   }
 
   return (
@@ -64,11 +68,8 @@ function AdminContent() {
           {tab === "Produtos" && <ProductListAdmin />}
           {tab === "Categorias" && <CategoryListAdmin />}
           {tab === "Depoimentos" && <TestimonialListAdmin />}
-          
-          
         </div>
       </main>
-      
       {/* Modais */}
       <ProductModal />
       <CategoryModal />

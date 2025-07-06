@@ -1,9 +1,9 @@
 "use client"
 
 import { ModeToggle } from "./theme-toggle";
-import { LucideCandy } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
 import { useState } from "react";
+import { Logo } from "@/components/logo";
 
 const Header = () => {
   const { user, isLoggedIn, logout } = useAuth();
@@ -19,8 +19,7 @@ const Header = () => {
         <div className="container mx-auto px-4 py-3 max-w-full md:max-w-none">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
-              <LucideCandy className="text-xl md:text-2xl text-pink-500" />
-              <h2 className="logo-text text-lg md:text-2xl lg:text-3xl text-pink-500">Delicias da Márcia</h2>
+              <Logo width={120} height={120} />
               <ModeToggle />
             </div>
 

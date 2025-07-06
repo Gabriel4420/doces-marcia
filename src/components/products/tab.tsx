@@ -61,7 +61,7 @@ export const ProductsTab = () => {
                 products
                   .filter((p) => p.categoryId === cat.id)
                   .map((val, index) => {
-                    console.log(val)
+
                     return (<ProductItem key={val.id || index} item={val} />)
                   })
               ) : (
