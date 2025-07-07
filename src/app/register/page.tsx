@@ -9,6 +9,8 @@ import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Label } from "@/components/ui/label";
+import { PasswordStrength } from "@/components/ui/password-strength";
+import { registerFormSchema } from "@/helpers/zodSchemas";
 
 const RegisterPage = () => {
   const [nome, setNome] = useState("");
@@ -18,21 +20,38 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
   const { register } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
 
+  const validateForm = () => {
+    try {
+      registerFormSchema.parse({
+        name: nome,
+        email,
+        password: senha,
+        confirmPassword: confirmarSenha
+      });
+      setErrors({});
+      return true;
+    } catch (error: any) {
+      const newErrors: Record<string, string> = {};
+      error.errors?.forEach((err: any) => {
+        newErrors[err.path[0]] = err.message;
+      });
+      setErrors(newErrors);
+      return false;
+    }
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (senha !== confirmarSenha) {
-      toast({
-        title: "Senhas não coincidem ❌",
-        description: "As senhas digitadas não são iguais. Tente novamente.",
-        variant: "destructive",
-      });
+    // Validar formulário antes de prosseguir
+    if (!validateForm()) {
       setIsLoading(false);
       return;
     }
@@ -50,6 +69,7 @@ const RegisterPage = () => {
         setEmail("");
         setSenha("");
         setConfirmarSenha("");
+        setErrors({});
       } else {
         toast({
           title: "Erro no cadastro ❌",
@@ -86,7 +106,7 @@ const RegisterPage = () => {
         </div>
       </div>
 
-      <form onSubmit={handleRegister} className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-xl shadow-xl w-full max-w-[280px] md:max-w-sm">
+      <form onSubmit={handleRegister} className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-xl shadow-xl w-full max-w-[320px] md:max-w-md">
         <div className="text-center mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-2">
             Criar conta
@@ -107,10 +127,13 @@ const RegisterPage = () => {
               placeholder="Seu nome completo"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              className="w-full text-sm md:text-base"
+              className={`w-full text-sm md:text-base ${errors.name ? 'border-red-500 focus:border-red-500' : ''}`}
               required
               disabled={isLoading}
             />
+            {errors.name && (
+              <p className="text-xs text-red-500 mt-1">{errors.name}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -123,10 +146,13 @@ const RegisterPage = () => {
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full text-sm md:text-base"
+              className={`w-full text-sm md:text-base ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
               required
               disabled={isLoading}
             />
+            {errors.email && (
+              <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -140,7 +166,7 @@ const RegisterPage = () => {
                 placeholder="Sua senha"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
-                className="w-full pr-10 text-sm md:text-base"
+                className={`w-full pr-10 text-sm md:text-base ${errors.password ? 'border-red-500 focus:border-red-500' : ''}`}
                 required
                 disabled={isLoading}
               />
@@ -160,6 +186,14 @@ const RegisterPage = () => {
                 )}
               </Button>
             </div>
+            {errors.password && (
+              <p className="text-xs text-red-500 mt-1">{errors.password}</p>
+            )}
+            
+            {/* Componente de força da senha */}
+            {senha && (
+              <PasswordStrength password={senha} className="mt-3" />
+            )}
           </div>
 
           <div className="space-y-2">
@@ -173,7 +207,7 @@ const RegisterPage = () => {
                 placeholder="Confirme sua senha"
                 value={confirmarSenha}
                 onChange={(e) => setConfirmarSenha(e.target.value)}
-                className="w-full pr-10 text-sm md:text-base"
+                className={`w-full pr-10 text-sm md:text-base ${errors.confirmPassword ? 'border-red-500 focus:border-red-500' : ''}`}
                 required
                 disabled={isLoading}
               />
@@ -193,27 +227,30 @@ const RegisterPage = () => {
                 )}
               </Button>
             </div>
+            {errors.confirmPassword && (
+              <p className="text-xs text-red-500 mt-1">{errors.confirmPassword}</p>
+            )}
           </div>
 
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 md:py-3 px-4 md:px-6 rounded-lg transition duration-300 text-sm md:text-base"
+            className="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Criando conta..." : "Criar conta"}
           </Button>
-        </div>
 
-        <div className="mt-6 md:mt-8 text-center">
-          <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
-            Já tem uma conta?{" "}
-            <Link
-              href="/login"
-              className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-300"
-            >
-              Faça login
-            </Link>
-          </p>
+          <div className="text-center">
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              Já tem uma conta?{" "}
+              <Link
+                href="/login"
+                className="text-pink-600 hover:text-pink-700 font-medium transition-colors duration-200"
+              >
+                Faça login
+              </Link>
+            </p>
+          </div>
         </div>
       </form>
     </div>

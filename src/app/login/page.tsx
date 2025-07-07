@@ -10,26 +10,42 @@ import { ModeToggle } from "@/components/theme-toggle";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { loginFormSchema } from "@/helpers/zodSchemas";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
   const { login } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
 
+  const validateForm = () => {
+    try {
+      loginFormSchema.parse({
+        email,
+        password
+      });
+      setErrors({});
+      return true;
+    } catch (error: any) {
+      const newErrors: Record<string, string> = {};
+      error.errors?.forEach((err: any) => {
+        newErrors[err.path[0]] = err.message;
+      });
+      setErrors(newErrors);
+      return false;
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Por favor, preencha todos os campos.",
-        variant: "destructive",
-      });
+    // Validar formulário antes de prosseguir
+    if (!validateForm()) {
       return;
     }
 
@@ -97,9 +113,13 @@ export default function LoginPage() {
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full text-sm md:text-base"
+              className={`w-full text-sm md:text-base ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
               required
+              disabled={isLoading}
             />
+            {errors.email && (
+              <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -113,14 +133,18 @@ export default function LoginPage() {
                 placeholder="Sua senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pr-10 text-sm md:text-base"
+                className={`w-full pr-10 text-sm md:text-base ${errors.password ? 'border-red-500 focus:border-red-500' : ''}`}
                 required
+                disabled={isLoading}
               />
               <Button
                 type="button"
+                variant="ghost"
+                size="icon"
                 className="absolute right-0 top-0 h-full px-3"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                disabled={isLoading}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -129,23 +153,26 @@ export default function LoginPage() {
                 )}
               </Button>
             </div>
+            {errors.password && (
+              <p className="text-xs text-red-500 mt-1">{errors.password}</p>
+            )}
           </div>
 
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 md:py-3 px-4 md:px-6 rounded-lg transition duration-300 text-sm md:text-base"
+            className="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Entrando..." : "Entrar"}
           </Button>
         </div>
 
         <div className="mt-6 md:mt-8 text-center">
-          <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
             Não tem uma conta?{" "}
             <Link
               href="/register"
-              className="text-pink-500 hover:text-pink-600 font-medium transition-colors duration-300"
+              className="text-pink-600 hover:text-pink-700 font-medium transition-colors duration-200"
             >
               Cadastre-se
             </Link>

@@ -10,6 +10,7 @@ const Testimonial = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [openModalId, setOpenModalId] = useState<number | null>(null);
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     loop: true,
     slideChanged(slider) {
@@ -73,25 +74,35 @@ const Testimonial = () => {
             <p className="text-center">Em breve ...</p>
           ) : (
             <>
-              <div ref={sliderRef} className="keen-slider w-full max-w-3xl">
-                {testimonials.map((testimonial, idx) => (
-                  <div
-                    key={testimonial.id}
-                    className={`keen-slider__slide flex justify-center items-center ${currentSlide === idx ? 'scale-105 z-10' : 'scale-95'} transition-transform`}
-                  >
-                    <TestimonialCard {...testimonial} />
-                  </div>
-                ))}
+                <div ref={sliderRef} className="keen-slider w-full max-w-3xl">
+              {testimonials.map((testimonial, idx) => {
+                const isOpen = openModalId === testimonial.id;
+                return (
+                    <div
+                      key={testimonial.id}
+                      className={`flex justify-center items-center ${isOpen ? '' : 'keen-slider__slide'} ${currentSlide === idx ? 'scale-105 z-10' : 'scale-95'} transition-transform`}
+                      style={{ aspectRatio: '1/1', maxWidth: 260, minWidth: 120, width: '100%', height: '100%', padding: 8 }}
+                    >
+                      <TestimonialCard
+                        image={testimonial.image}
+                        id={testimonial.id}
+                        isOpen={isOpen}
+                        onOpenModal={() => setOpenModalId(testimonial.id)}
+                        onCloseModal={() => setOpenModalId(null)}
+                      />
+                    </div>
+                );
+              })}
               </div>
               <div className="flex gap-4 mt-4 justify-center">
                 <button
                   onClick={() => instanceRef.current?.prev()}
                   className="px-3 py-1 rounded-full bg-pink-200 hover:bg-pink-300 text-pink-800 font-bold shadow"
-                >&#8592; Anterior</button>
+                >&#8592; </button>
                 <button
                   onClick={() => instanceRef.current?.next()}
                   className="px-3 py-1 rounded-full bg-pink-200 hover:bg-pink-300 text-pink-800 font-bold shadow"
-                >Próximo &#8594;</button>
+                > &#8594;</button>
               </div>
             </>
           )}
