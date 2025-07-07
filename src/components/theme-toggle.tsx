@@ -26,13 +26,13 @@ export function ModeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme("light")}>
-         <Sun className="mr-2"/> Light
+         <Sun className="mr-2"/> Claro
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("dark")}>
-         <Moon className="mr-2"/> Dark
+         <Moon className="mr-2"/> Escuro
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")}>
-          <LaptopIcon className="mr-2"/>System
+          <LaptopIcon className="mr-2"/>Sistema
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
