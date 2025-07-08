@@ -3,6 +3,7 @@ import { LucideCandy, LucideClock, LucideHeart, LucideMail, LucideMapPin, Lucide
 import { FaHeart } from "react-icons/fa";
 import { useState } from "react";
 import { Logo } from "@/components/logo";
+import { CookieSettings } from "@/components/cookie-settings";
 
 const Footer = () => {
     const [hoverHeart, setHoverHeart] = useState(false);
@@ -139,31 +140,36 @@ const Footer = () => {
 
                 </div>
 
-                <div className="border-t border-gray-800 mt-6 md:mt-8 pt-6 md:pt-8 text-center">
-                    <p className="text-xs sm:text-sm md:text-base dark:text-gray-400 text-gray-900">
-                        © 2024 Delicias da Márcia. Todos os direitos reservados. Feito com{" "}
-                        <span
-                            onMouseEnter={() => setHoverHeart(true)}
-                            onMouseLeave={() => setHoverHeart(false)}
-                            className="inline align-middle cursor-pointer transition-colors"
-                        >
-                            {hoverHeart ? (
-                                <FaHeart className="inline w-4 h-4 text-pink-500 animate-pulse" aria-hidden="true" />
-                            ) : (
-                                <LucideHeart className="inline w-4 h-4 text-pink-500" aria-hidden="true" />
-                            )}
-                        </span>{" "}por{" "}
-                        <a
-                            href="https://gabrielrodrigues.vercel.app"
-                            className="text-pink-500 hover:text-pink-400 hover:underline  transition-colors duration-300"
-                            aria-label="Desenvolvedor do site"
-                            tabIndex={0}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            @Gabriel4420
-                        </a>
-                    </p>
+                <div className="border-t border-gray-800 mt-6 md:mt-8 pt-6 md:pt-8">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p className="text-xs sm:text-sm md:text-base dark:text-gray-400 text-gray-900 text-center sm:text-left">
+                            © 2024 Delicias da Márcia. Todos os direitos reservados. Feito com{" "}
+                            <span
+                                onMouseEnter={() => setHoverHeart(true)}
+                                onMouseLeave={() => setHoverHeart(false)}
+                                className="inline align-middle cursor-pointer transition-colors"
+                            >
+                                {hoverHeart ? (
+                                    <FaHeart className="inline w-4 h-4 text-pink-500 animate-pulse" aria-hidden="true" />
+                                ) : (
+                                    <LucideHeart className="inline w-4 h-4 text-pink-500" aria-hidden="true" />
+                                )}
+                            </span>{" "}por{" "}
+                            <a
+                                href="https://gabrielrodrigues.vercel.app"
+                                className="text-pink-500 hover:text-pink-400 hover:underline  transition-colors duration-300"
+                                aria-label="Desenvolvedor do site"
+                                tabIndex={0}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                @Gabriel4420
+                            </a>
+                        </p>
+                        <div className="flex items-center gap-4">
+                            <CookieSettings />
+                        </div>
+                    </div>
                 </div>
             </div>
         </footer>

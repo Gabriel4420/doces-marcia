@@ -27,6 +27,7 @@ const Contact = () => {
   });
 
   const onSubmit = async (data: ContactFormData) => {
+    console.log(data)
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -40,6 +41,7 @@ const Contact = () => {
       });
       reset();
     } catch (error) {
+      console.log(error)
       toast({
         title: "Erro ao enviar",
         description: "Tente novamente em alguns instantes.",
@@ -141,7 +143,7 @@ const Contact = () => {
                     id="name"
                     type="text"
                     placeholder="Digite seu nome"
-                    className="border-gray-300 focus:border-pink-500 focus:ring-pink-500 text-sm md:text-base"
+                    className="border-gray-300 text-gray-700 focus:border-pink-500 focus:ring-pink-500 text-sm md:text-base"
                     aria-required="true"
                     {...register("name")}
                   />
@@ -158,7 +160,7 @@ const Contact = () => {
                     id="email"
                     type="email"
                     placeholder="seu@email.com"
-                    className="border-gray-300 focus:border-pink-500 focus:ring-pink-500 text-sm md:text-base"
+                    className="border-gray-300 text-gray-700 focus:border-pink-500 focus:ring-pink-500 text-sm md:text-base"
                     aria-required="true"
                     {...register("email")}
                   />
@@ -175,7 +177,7 @@ const Contact = () => {
                     id="message"
                     placeholder="Digite sua mensagem..."
                     rows={4}
-                    className="border-gray-300 focus:border-pink-500 focus:ring-pink-500 resize-none text-sm md:text-base"
+                    className="border-gray-300 text-gray-700 focus:border-pink-500 focus:ring-pink-500 resize-none text-sm md:text-base"
                     aria-required="true"
                     {...register("message")}
                   />

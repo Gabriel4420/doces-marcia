@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Toaster } from "@/components/ui/toaster";
+import { CookieConsent } from "@/components/cookie-consent";
+import { CookieNotification } from "@/components/cookie-notification";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,6 +39,8 @@ export default function RootLayout({
               </main>
             </div>
             <Toaster />
+            <CookieConsent />
+            <CookieNotification />
           </AuthProvider>
         </ThemeProvider>
       </body>

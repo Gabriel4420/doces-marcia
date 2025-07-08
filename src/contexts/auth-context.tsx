@@ -69,9 +69,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsLoggedIn(true);
         localStorage.setItem("user", JSON.stringify(data.user));
         if (router) {
-          router.push("/");
+          router.push("/admin");
         } else {
-          window.location.href = "/";
+          window.location.href = "/admin";
         }
         return true;
       } else {
