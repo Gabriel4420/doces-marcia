@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const fetchUser = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/auth/me");
+        const res = await fetch("/api/auth/me", { credentials: 'include' });
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
@@ -60,9 +60,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, type: "login" }),
       });
-      if (!res.ok) return false;
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        const msg = errData?.error || 'Falha no login';
+        throw new Error(msg);
+      }
       // Buscar usuário autenticado após login
-      const meRes = await fetch("/api/auth/me");
+      const meRes = await fetch("/api/auth/me", { credentials: 'include' });
 
       
       if (meRes.ok) {
@@ -71,21 +75,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(data.user);
         setIsLoggedIn(true);
         localStorage.setItem("user", JSON.stringify(data.user));
-        if (router) {
-          router.push("/admin");
-        } else {
-          window.location.href = "/admin";
-        }
+        if (router) router.push("/admin");
         return true;
       } else {
+        const err = await meRes.json().catch(() => ({}));
         setUser(null);
         setIsLoggedIn(false);
         localStorage.removeItem("user");
-        return false;
+        console.warn('Falha ao obter usuário autenticado:', meRes.status, err?.error || '');
+        throw new Error(err?.error || 'Não autenticado');
       }
     } catch (error) {
-      console.error("Erro no login:", error);
-      return false;
+      const message = error instanceof Error ? error.message : 'Erro no login';
+      console.error("Erro no login:", message);
+      throw new Error(message);
     }
   };
 
@@ -116,4 +119,4 @@ export const useAuth = () => {
     throw new Error("useAuth deve ser usado dentro de um AuthProvider");
   }
   return context;
-}; 
+};

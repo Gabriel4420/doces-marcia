@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 
 // Rotas protegidas
 const protectedRoutes = ['/admin'];
@@ -14,7 +14,13 @@ export function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/login', req.url));
     }
     try {
-      jwt.verify(token, process.env.JWT_SECRET || 'secret');
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret');
+      // HS256 por padrão no jose quando segredo é compartilhado
+      // Verifica assinatura de forma compatível com Edge Runtime
+      // Se inválido, cai no catch e redireciona
+      return jwtVerify(token, secret)
+        .then(() => NextResponse.next())
+        .catch(() => NextResponse.redirect(new URL('/login', req.url)));
     } catch (e) {
       // Token inválido, redireciona para login
       return NextResponse.redirect(new URL('/login', req.url));
@@ -26,4 +32,4 @@ export function middleware(req: NextRequest) {
 
 export const config = {
   matcher: ['/admin/:path*'],
-}; 
+};

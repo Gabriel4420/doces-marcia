@@ -58,11 +58,12 @@ export default function LoginPage() {
         title: "Login realizado!",
         description: "Bem-vindo de volta!",
       });
-      router.push("/admin");
+      // Redirecionamento é feito pelo context
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro no login";
       toast({
         title: "Erro no login",
-        description: "Email ou senha incorretos. Tente novamente.",
+        description: message,
         variant: "destructive",
       });
     } finally {
@@ -182,4 +183,4 @@ export default function LoginPage() {
       </form>
     </div>
   );
-} 
+}
