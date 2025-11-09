@@ -7,6 +7,7 @@ import { TabsSkeleton } from "@/components/products/skeleton";
 import { ProductsTab } from "@/components/products/tab";
 
 import Testimonial from "@/components/testimonial";
+import { InstagramSection } from "@/components/instagram-section";
 import { Suspense } from "react";
 import { WhatsappButton } from "@/components/whatsapp-button";
 import { BackToTopButton } from "@/components/back-to-top-button";
@@ -33,6 +34,7 @@ export default function Home() {
       </div>
       <About />
       <Testimonial />
+      <InstagramSection />
       <Contact />
      
       <WhatsappButton />
