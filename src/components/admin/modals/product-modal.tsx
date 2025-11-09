@@ -17,6 +17,7 @@ export function ProductModal() {
     categories,
     handleProductSubmit,
     handleImageChange,
+    prepareProductImage,
     loading,
   } = useAdmin();
 
@@ -87,7 +88,7 @@ export function ProductModal() {
               Imagem do Produto
             </label>
 
-            {/* Dropzone */}
+            {/* Dropzone: Clique, Drag-and-Drop e Colagem (Ctrl+V) */}
             <div
               onDragOver={(e) => {
                 e.preventDefault();
@@ -110,24 +111,9 @@ export function ProductModal() {
                   return;
                 }
                 const file = files[0];
-                const allowed = [
-                  "image/jpeg",
-                  "image/png",
-                  "image/gif",
-                  "image/webp",
-                ];
-                if (!allowed.includes(file.type)) {
-                  setUploadError(
-                    "Formato inválido. Use JPG, PNG, GIF ou WEBP."
-                  );
-                  return;
-                }
-                if (file.size > 5 * 1024 * 1024) {
-                  setUploadError("Arquivo muito grande. Máximo de 5MB.");
-                  return;
-                }
-                setProductData({ ...productData, imageFile: file });
-                setImagePreview(URL.createObjectURL(file));
+                prepareProductImage(file).then((res) => {
+                  if (res.error) setUploadError(res.error);
+                });
               }}
               onClick={() => inputRef.current?.click()}
               onKeyDown={(e) => {
@@ -136,9 +122,26 @@ export function ProductModal() {
                   inputRef.current?.click();
                 }
               }}
+              onPaste={(e) => {
+                setUploadError(null);
+                const items = Array.from(e.clipboardData?.items || []);
+                const imageItem = items.find((i) => i.type.startsWith("image/"));
+                if (!imageItem) {
+                  setUploadError("Conteúdo colado não é uma imagem.");
+                  return;
+                }
+                const file = imageItem.getAsFile();
+                if (!file) {
+                  setUploadError("Não foi possível ler a imagem da área de transferência.");
+                  return;
+                }
+                prepareProductImage(file).then((res) => {
+                  if (res.error) setUploadError(res.error);
+                });
+              }}
               role="button"
               tabIndex={0}
-              aria-label="Área para selecionar ou soltar imagem do produto"
+              aria-label="Área para selecionar, colar ou soltar imagem do produto"
               className={`rounded-lg p-4 text-center border-2 border-dashed transition-colors ${
                 isDragging
                   ? "border-pink-600 bg-pink-50 dark:bg-pink-900/30"
@@ -148,24 +151,18 @@ export function ProductModal() {
               <input
                 ref={inputRef}
                 type="file"
-                accept="image/jpeg,image/png,image/gif"
+                accept="image/jpeg,image/png,image/gif,image/webp"
                 onChange={(e) => {
                   setUploadError(null);
                   const file = e.target.files?.[0];
                   if (!file) return;
-                  const allowed = ["image/jpeg", "image/png", "image/gif"];
-                  if (!allowed.includes(file.type)) {
-                    setUploadError("Formato inválido. Use JPG, PNG ou GIF.");
-                    e.currentTarget.value = "";
-                    return;
-                  }
-                  if (file.size > 5 * 1024 * 1024) {
-                    setUploadError("Arquivo muito grande. Máximo de 5MB.");
-                    e.currentTarget.value = "";
-                    return;
-                  }
-                  // Reuse existing handler to keep behavior consistent
-                  handleImageChange(e);
+                  // Centraliza validação e conversão
+                  prepareProductImage(file).then((res) => {
+                    if (res.error) {
+                      setUploadError(res.error);
+                      e.currentTarget.value = "";
+                    }
+                  });
                 }}
                 className="hidden"
                 id="product-image"
@@ -174,10 +171,10 @@ export function ProductModal() {
               <div className="flex flex-col items-center gap-2">
                 <ImageIcon className="h-6 w-6 text-pink-600" />
                 <span className="cursor-pointer text-pink-600 hover:text-pink-700 font-medium">
-                  Clique para selecionar uma imagem
+                  Clique, arraste/solte ou cole (Ctrl+V)
                 </span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
-                  PNG, JPG, GIF até 5MB — ou arraste e solte aqui
+                  JPEG, PNG, GIF, WebP até 5MB
                 </span>
               </div>
             </div>
@@ -195,7 +192,7 @@ export function ProductModal() {
                 <img
                   src={imagePreview}
                   alt="Pré-visualização da imagem do produto"
-                  className="w-24 h-24 object-cover rounded-lg border"
+                  className="w-24 h-24 object-cover rounded-lg border max-w-full"
                 />
                 <Button
                   type="button"

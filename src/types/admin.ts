@@ -20,6 +20,7 @@ export interface AdminContextType {
   handleEditProduct: (prod: any) => void;
   handleDeleteProduct: (id: number, imageUrl?: string) => void;
   handleImageChange: (e: any) => void;
+  prepareProductImage: (file: File) => Promise<{ error?: string }>;
   
   // Categories
   categories: any[];

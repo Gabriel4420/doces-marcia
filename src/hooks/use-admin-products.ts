@@ -12,6 +12,58 @@ export function useAdminProducts() {
 
   const { uploadImage, deleteImage, loading: uploadLoading } = useSupabaseUpload();
 
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+  ];
+  const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+
+  const convertToWebPIfNeeded = async (file: File): Promise<File> => {
+    // Não converter GIF para preservar animação; manter WebP
+    if (file.type === 'image/gif' || file.type === 'image/webp') return file;
+
+    // Converter JPEG/PNG para WebP via canvas
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(file);
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob((blob) => {
+          if (!blob) return resolve(file);
+          const webpFile = new File([blob], file.name.replace(/\.[^.]+$/, '.webp'), { type: 'image/webp' });
+          resolve(webpFile);
+        }, 'image/webp', 0.92);
+      };
+      img.onerror = () => resolve(file);
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const prepareProductImage = async (file: File): Promise<{ error?: string }> => {
+    // Validações
+    if (!file || !file.type.startsWith('image/')) {
+      return { error: 'Arquivo inválido: selecione uma imagem (JPEG, PNG, GIF, WebP).' };
+    }
+    if (!allowedTypes.includes(file.type)) {
+      return { error: 'Formato não suportado. Use JPEG, PNG, GIF ou WebP.' };
+    }
+    if (file.size > MAX_SIZE) {
+      return { error: 'Arquivo muito grande. Tamanho máximo: 5MB.' };
+    }
+
+    // Converter se necessário
+    const processed = await convertToWebPIfNeeded(file);
+    setProductData((prev: any) => ({ ...prev, imageFile: processed }));
+    setImagePreview(URL.createObjectURL(processed));
+    return {};
+  };
+
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     const res = await fetch("/api/products");
@@ -141,12 +193,10 @@ export function useAdminProducts() {
     fetchProducts();
   };
 
-  const handleImageChange = (e: any) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProductData((prev: any) => ({ ...prev, imageFile: file }));
-      setImagePreview(URL.createObjectURL(file));
-    }
+  const handleImageChange = async (e: any) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await prepareProductImage(file);
   };
 
   return {
@@ -166,5 +216,6 @@ export function useAdminProducts() {
     handleEditProduct,
     handleDeleteProduct,
     handleImageChange,
+    prepareProductImage,
   };
-} 
+}

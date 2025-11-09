@@ -29,6 +29,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     handleEditProduct,
     handleDeleteProduct,
     handleImageChange,
+    prepareProductImage,
   } = useAdminProducts();
   const {
     categories,
@@ -85,6 +86,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     handleEditProduct,
     handleDeleteProduct,
     handleImageChange,
+    prepareProductImage,
     
     // Categories
     categories,
