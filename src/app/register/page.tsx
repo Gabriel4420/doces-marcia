@@ -70,6 +70,7 @@ const RegisterPage = () => {
         setSenha("");
         setConfirmarSenha("");
         setErrors({});
+        router.push("/admin");
       } else {
         toast({
           title: "Erro no cadastro ❌",

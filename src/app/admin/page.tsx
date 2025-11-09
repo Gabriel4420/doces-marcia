@@ -24,6 +24,7 @@ function AdminContent() {
   useEffect(() => {
     if (!loading && !isLoggedIn) {
       router.replace("/login");
+      return;
     }
   }, [isLoggedIn, loading, router]);
 
@@ -44,6 +45,7 @@ function AdminContent() {
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-40 w-full rounded-xl" />
         </div>
+        
       </div>
     );
   }

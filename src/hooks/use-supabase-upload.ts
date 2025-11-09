@@ -34,7 +34,9 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
         throw new Error('Arquivo deve ter no máximo 5MB');
       }
 
+      const skipBucketCheck = true;
       // Verificar se o bucket existe
+      if (!skipBucketCheck) {
       const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
       if (bucketsError) {
         console.error('Erro ao listar buckets:', bucketsError);
@@ -52,6 +54,7 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
 
         bucketName = defaultBucket;
       }
+      }
 
       // Gerar nome único para o arquivo
       const timestamp = Date.now();
@@ -61,31 +64,26 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
 
 
 
-      // Upload para o Supabase Storage
-      const { data, error: uploadError } = await supabase.storage
-        .from(bucketName)
-        .upload(fileName, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+      // Upload via API do servidor (Service Role)
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('bucket', bucketName);
 
-      if (uploadError) {
-        console.error('Erro no upload:', uploadError);
-        throw new Error(`Erro no upload: ${uploadError.message}`);
+      const res = await fetch('/api/storage/upload', {
+        method: 'POST',
+        body: fd,
+      });
+
+      if (!res.ok) {
+        const problem = await res.json().catch(() => ({ error: 'Falha desconhecida no upload' }));
+        throw new Error(`Erro no upload: ${problem.error}`);
       }
 
-
-
-      // Obter URL pública
-      const { data: urlData } = supabase.storage
-        .from(bucketName)
-        .getPublicUrl(fileName);
-
-
+      const payload = await res.json();
 
       return {
-        url: urlData.publicUrl,
-        path: fileName
+        url: payload.url,
+        path: payload.path
       };
 
     } catch (err) {
@@ -164,4 +162,4 @@ export function useSupabaseUpload(): UseSupabaseUploadReturn {
     error,
     clearError
   };
-} 
+}

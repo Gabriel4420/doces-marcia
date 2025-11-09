@@ -20,6 +20,7 @@ export default function LoginPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const { login } = useAuth();
+  
   const { toast } = useToast();
   const router = useRouter();
 

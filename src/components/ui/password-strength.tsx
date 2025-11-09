@@ -1,128 +1,94 @@
-import React from 'react';
-import { Check, X } from 'lucide-react';
+"use client"
 
-interface PasswordRequirement {
-  label: string;
-  test: (password: string) => boolean;
-}
+import React from "react";
+import { CheckCircle2, XCircle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
-interface PasswordStrengthProps {
+type PasswordStrengthProps = {
   password: string;
   className?: string;
-}
+};
 
-const requirements: PasswordRequirement[] = [
-  {
-    label: "Mínimo 6 caracteres",
-    test: (password: string) => password.length >= 6
-  },
-  {
-    label: "Máximo 12 caracteres",
-    test: (password: string) => password.length <= 12
-  },
-  {
-    label: "Pelo menos uma letra maiúscula",
-    test: (password: string) => /[A-Z]/.test(password)
-  },
-  {
-    label: "Pelo menos uma letra minúscula",
-    test: (password: string) => /[a-z]/.test(password)
-  },
-  {
-    label: "Pelo menos um número",
-    test: (password: string) => /[0-9]/.test(password)
-  },
-  {
-    label: "Pelo menos um caractere especial",
-    test: (password: string) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
-  }
-];
+export const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password, className }) => {
+  const lengthOk = password.length >= 6 && password.length <= 12;
+  const upperOk = /[A-Z]/.test(password);
+  const lowerOk = /[a-z]/.test(password);
+  const numberOk = /[0-9]/.test(password);
+  const specialOk = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
 
-export const PasswordStrength: React.FC<PasswordStrengthProps> = ({ 
-  password, 
-  className = "" 
-}) => {
-  const metRequirements = requirements.map(req => ({
-    ...req,
-    met: req.test(password)
-  }));
+  const checks = [lengthOk, upperOk, lowerOk, numberOk, specialOk];
+  const score = checks.filter(Boolean).length;
+  const percent = Math.round((score / 5) * 100);
 
-  const allMet = metRequirements.every(req => req.met);
-  const strengthPercentage = (metRequirements.filter(req => req.met).length / requirements.length) * 100;
-
-  const getStrengthColor = () => {
-    if (strengthPercentage === 100) return "bg-green-500";
-    if (strengthPercentage >= 80) return "bg-yellow-500";
-    if (strengthPercentage >= 60) return "bg-orange-500";
-    return "bg-red-500";
-  };
-
-  const getStrengthText = () => {
-    if (strengthPercentage === 100) return "Senha forte";
-    if (strengthPercentage >= 80) return "Senha boa";
-    if (strengthPercentage >= 60) return "Senha média";
-    return "Senha fraca";
-  };
-
-  if (!password) return null;
+  const strengthLabel = (() => {
+    if (score <= 1) return "Força: muito fraca";
+    if (score === 2) return "Força: fraca";
+    if (score === 3) return "Força: média";
+    if (score === 4) return "Força: forte";
+    return "Força: excelente";
+  })();
 
   return (
-    <div className={`space-y-3 ${className}`}>
-      {/* Barra de força da senha */}
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600 dark:text-gray-400">Força da senha:</span>
-          <span className={`font-medium ${
-            strengthPercentage === 100 ? 'text-green-600 dark:text-green-400' :
-            strengthPercentage >= 80 ? 'text-yellow-600 dark:text-yellow-400' :
-            strengthPercentage >= 60 ? 'text-orange-600 dark:text-orange-400' :
-            'text-red-600 dark:text-red-400'
-          }`}>
-            {getStrengthText()}
+    <div className={cn("rounded-md border p-3", className)}>
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-sm text-muted-foreground">{strengthLabel}</span>
+        <span className="text-xs text-muted-foreground">{percent}%</span>
+      </div>
+      <Progress value={percent} />
+
+      <ul className="mt-3 space-y-2 text-sm">
+        <li className="flex items-center gap-2">
+          {lengthOk ? (
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+          ) : (
+            <XCircle className="h-4 w-4 text-red-600" />
+          )}
+          <span>
+            Comprimento entre <span className="font-medium">6</span> e <span className="font-medium">12</span> caracteres
           </span>
-        </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-          <div 
-            className={`h-2 rounded-full transition-all duration-300 ${getStrengthColor()}`}
-            style={{ width: `${strengthPercentage}%` }}
-          />
-        </div>
-      </div>
+        </li>
+        <li className="flex items-center gap-2">
+          {upperOk ? (
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+          ) : (
+            <XCircle className="h-4 w-4 text-red-600" />
+          )}
+          <span>Contém pelo menos uma letra maiúscula (A-Z)</span>
+        </li>
+        <li className="flex items-center gap-2">
+          {lowerOk ? (
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+          ) : (
+            <XCircle className="h-4 w-4 text-red-600" />
+          )}
+          <span>Contém pelo menos uma letra minúscula (a-z)</span>
+        </li>
+        <li className="flex items-center gap-2">
+          {numberOk ? (
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+          ) : (
+            <XCircle className="h-4 w-4 text-red-600" />
+          )}
+          <span>Contém pelo menos um número (0-9)</span>
+        </li>
+        <li className="flex items-center gap-2">
+          {specialOk ? (
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+          ) : (
+            <XCircle className="h-4 w-4 text-red-600" />
+          )}
+          <span>
+            Contém pelo menos um caractere especial (!@#$%^&*()_+-=[]{}|;:,.&lt;&gt;?)
+          </span>
+        </li>
+      </ul>
 
-      {/* Lista de requisitos */}
-      <div className="space-y-2">
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-          Requisitos da senha:
-        </p>
-        <div className="space-y-1">
-          {metRequirements.map((requirement, index) => (
-            <div 
-              key={index} 
-              className={`flex items-center gap-2 text-xs transition-colors duration-200 ${
-                requirement.met 
-                  ? 'text-green-600 dark:text-green-400' 
-                  : 'text-gray-500 dark:text-gray-400'
-              }`}
-            >
-              {requirement.met ? (
-                <Check className="h-3 w-3 flex-shrink-0" />
-              ) : (
-                <X className="h-3 w-3 flex-shrink-0" />
-              )}
-              <span>{requirement.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Mensagem de sucesso quando todos os requisitos são atendidos */}
-      {allMet && (
-        <div className="p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
-          <p className="text-xs text-green-700 dark:text-green-300 font-medium">
-            ✅ Senha atende a todos os requisitos de segurança!
-          </p>
+      {score === 5 && (
+        <div className="mt-3 rounded-md bg-green-50 px-3 py-2 text-xs text-green-700 dark:bg-green-950 dark:text-green-300">
+          A senha atende a todos os requisitos de segurança.
         </div>
       )}
     </div>
   );
-}; 
+};

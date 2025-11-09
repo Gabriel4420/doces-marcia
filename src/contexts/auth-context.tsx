@@ -63,8 +63,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (!res.ok) return false;
       // Buscar usuário autenticado após login
       const meRes = await fetch("/api/auth/me");
+
+      
       if (meRes.ok) {
         const data = await meRes.json();
+        console.log(data  )
         setUser(data.user);
         setIsLoggedIn(true);
         localStorage.setItem("user", JSON.stringify(data.user));
