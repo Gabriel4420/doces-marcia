@@ -5,11 +5,11 @@ import { toast } from "./use-toast";
 export function useAdminTestimonials() {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [showTestimonialForm, setShowTestimonialForm] = useState(false);
-  const [testimonialImage, setTestimonialImage] = useState<File | null>(null);
-  const [testimonialPreview, setTestimonialPreview] = useState<string | null>(null);
+  const [testimonialImages, setTestimonialImages] = useState<File[]>([]);
+  const [testimonialPreviews, setTestimonialPreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const { uploadImage, deleteImage, loading: uploadLoading } = useSupabaseUpload();
+  const { uploadImage, uploadMultipleImages, deleteImage, loading: uploadLoading } = useSupabaseUpload();
 
   const fetchTestimonials = useCallback(async () => {
     setLoading(true);
@@ -21,42 +21,44 @@ export function useAdminTestimonials() {
   // CRUD Depoimento
   const handleTestimonialSubmit = async (e: any) => {
     e.preventDefault();
-    if (!testimonialImage) return;
+    if (!testimonialImages || testimonialImages.length === 0) return;
 
     try {
-      // Upload da imagem
-      const uploadResult = await uploadImage(testimonialImage, "images");
-      if (!uploadResult) {
-        throw new Error("Erro no upload da imagem");
+      // Upload das imagens (múltiplas)
+      const uploadResults = await uploadMultipleImages(testimonialImages, "images");
+      if (!uploadResults || uploadResults.length === 0) {
+        throw new Error("Erro no upload das imagens");
       }
 
-      // Salvar depoimento com a URL da imagem
-      await fetch("/api/testimonials", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          image: uploadResult.url 
-        }),
-      });
+      // Salvar cada depoimento com sua URL
+      await Promise.all(
+        uploadResults.map((res) =>
+          fetch("/api/testimonials", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ image: res.url }),
+          })
+        )
+      );
+
       toast({
-        title: "Depoimento cadastrado",
-        description: "O depoimento foi salvo com sucesso!",
-        duration: 3000
+        title: "Depoimentos cadastrados",
+        description: `Foram salvos ${uploadResults.length} depoimento(s)!`,
+        duration: 3000,
       });
 
       // Limpar formulário
-      setTestimonialImage(null);
-      setTestimonialPreview(null);
+      setTestimonialImages([]);
+      setTestimonialPreviews([]);
       setShowTestimonialForm(false);
-      
+
       // Recarregar depoimentos
       fetchTestimonials();
-
     } catch (error) {
-      console.error("Erro ao salvar depoimento:", error);
-      alert("Erro ao salvar depoimento. Tente novamente.");
+      console.error("Erro ao salvar depoimentos:", error);
+      alert("Erro ao salvar depoimentos. Tente novamente.");
     }
   };
 
@@ -88,10 +90,19 @@ export function useAdminTestimonials() {
   };
 
   const handleTestimonialImageChange = (e: any) => {
-    const file = e.target.files[0];
-    if (file) {
-      setTestimonialImage(file);
-      setTestimonialPreview(URL.createObjectURL(file));
+    const files: File[] = Array.from(e.target.files || []);
+    if (files && files.length > 0) {
+      const validFiles = files.filter((f) => f.type.startsWith("image/") && f.size <= 5 * 1024 * 1024);
+      setTestimonialImages(validFiles);
+      setTestimonialPreviews(validFiles.map((f) => URL.createObjectURL(f)));
+    }
+  };
+
+  const handleTestimonialDrop = (files: File[]) => {
+    const validFiles = files.filter((f) => f.type.startsWith("image/") && f.size <= 5 * 1024 * 1024);
+    if (validFiles.length > 0) {
+      setTestimonialImages(validFiles);
+      setTestimonialPreviews(validFiles.map((f) => URL.createObjectURL(f)));
     }
   };
 
@@ -100,14 +111,15 @@ export function useAdminTestimonials() {
     setTestimonials,
     showTestimonialForm,
     setShowTestimonialForm,
-    testimonialImage,
-    setTestimonialImage,
-    testimonialPreview,
-    setTestimonialPreview,
+    testimonialImages,
+    setTestimonialImages,
+    testimonialPreviews,
+    setTestimonialPreviews,
     loading: loading || uploadLoading,
     fetchTestimonials,
     handleTestimonialSubmit,
     handleDeleteTestimonial,
     handleTestimonialImageChange,
+    handleTestimonialDrop,
   };
-} 
+}

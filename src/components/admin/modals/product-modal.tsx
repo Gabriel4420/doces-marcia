@@ -110,9 +110,16 @@ export function ProductModal() {
                   return;
                 }
                 const file = files[0];
-                const allowed = ["image/jpeg", "image/png", "image/gif"];
+                const allowed = [
+                  "image/jpeg",
+                  "image/png",
+                  "image/gif",
+                  "image/webp",
+                ];
                 if (!allowed.includes(file.type)) {
-                  setUploadError("Formato inválido. Use JPG, PNG ou GIF.");
+                  setUploadError(
+                    "Formato inválido. Use JPG, PNG, GIF ou WEBP."
+                  );
                   return;
                 }
                 if (file.size > 5 * 1024 * 1024) {

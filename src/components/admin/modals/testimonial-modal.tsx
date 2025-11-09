@@ -6,18 +6,19 @@ export function TestimonialModal() {
   const {
     showTestimonialForm,
     setShowTestimonialForm,
-    testimonialImage,
-    setTestimonialImage,
-    testimonialPreview,
-    setTestimonialPreview,
+    testimonialImages,
+    setTestimonialImages,
+    testimonialPreviews,
+    setTestimonialPreviews,
     handleTestimonialSubmit,
     handleTestimonialImageChange,
+    handleTestimonialDrop,
   } = useAdmin();
 
   const handleClose = () => {
     setShowTestimonialForm(false);
-    setTestimonialImage(null);
-    setTestimonialPreview(null);
+    setTestimonialImages([]);
+    setTestimonialPreviews([]);
   };
 
   if (!showTestimonialForm) return null;
@@ -44,32 +45,43 @@ export function TestimonialModal() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Imagem do Depoimento
             </label>
-            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
+            <div
+              className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center"
+              onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              onDrop={(e) => {
+                e.preventDefault();
+                const files = Array.from(e.dataTransfer.files || []) as File[];
+                handleTestimonialDrop(files);
+              }}
+            >
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleTestimonialImageChange}
                 className="hidden"
                 id="testimonial-image"
-                required
+                multiple
               />
               <label
                 htmlFor="testimonial-image"
                 className="cursor-pointer text-pink-600 hover:text-pink-700 font-medium"
               >
-                Clique para selecionar uma imagem
+                Arraste e solte ou clique para selecionar imagens
               </label>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                PNG, JPG, JPEG até 5MB
+                PNG, JPG, JPEG até 5MB por imagem
               </p>
             </div>
-            {testimonialPreview && (
-              <div className="mt-4 text-center">
-                <img
-                  src={testimonialPreview}
-                  alt="Preview"
-                  className="w-40 h-40 object-cover rounded-lg border mx-auto"
-                />
+            {testimonialPreviews && testimonialPreviews.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {testimonialPreviews.map((src, idx) => (
+                  <img
+                    key={idx}
+                    src={src}
+                    alt={`Preview ${idx + 1}`}
+                    className="w-full aspect-square object-cover rounded-lg border"
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -79,7 +91,7 @@ export function TestimonialModal() {
             <Button
               type="submit"
               className="flex-1 bg-pink-600 hover:bg-pink-700 text-white"
-              disabled={!testimonialImage}
+              disabled={!testimonialImages || testimonialImages.length === 0}
             >
               Cadastrar
             </Button>
@@ -96,4 +108,4 @@ export function TestimonialModal() {
       </div>
     </div>
   );
-} 
+}

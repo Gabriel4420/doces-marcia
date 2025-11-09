@@ -42,36 +42,49 @@ export const ProductsTab = () => {
 
   return (
     <div className="w-full max-w-6xl mx-auto px-1 xs:px-2 sm:px-4">
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 px-2 md:gap-4 mb-6 md:mb-8">
-          {Array.isArray(categories) && categories.map((cat) => (
-            <TabsTrigger
+      <Tabs
+        value={selectedTab}
+        onValueChange={setSelectedTab}
+        className="w-full"
+      >
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 px-2 md:gap-4 mb-6 md:mb-48">
+          {Array.isArray(categories) &&
+            categories.map((cat) => (
+              <TabsTrigger
+                key={cat.name}
+                value={cat.name}
+                className="text-xs shadow-md md:text-sm lg:text-base font-medium px-2 md:px-4 py-2 md:py-3 dark:data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:bg-pink-500 dark:data-[state=inactive]:bg-slate-600"
+              >
+                {cat.name}
+              </TabsTrigger>
+            ))}
+        </TabsList>
+        {Array.isArray(categories) &&
+          categories.map((cat) => (
+            <TabsContent
               key={cat.name}
               value={cat.name}
-              className="text-xs shadow-md md:text-sm lg:text-base font-medium px-2 md:px-4 py-2 md:py-3 dark:data-[state=active]:bg-pink-500 data-[state=active]:text-white data-[state=active]:bg-pink-500 dark:data-[state=inactive]:bg-slate-600"
+              className="mt-24 md:mt-0"
             >
-              {cat.name}
-            </TabsTrigger>
+              <div className="grid gap-3 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                {products.filter((p) => p.categoryId === cat.id).length > 0 ? (
+                  products
+                    .filter((p) => p.categoryId === cat.id)
+                    .map((val, index) => {
+                      return <ProductItem key={val.id || index} item={val} />;
+                    })
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-8 md:py-12">
+                    <ErrorHandler
+                      products={[]}
+                      title={cat.name}
+                      value={cat.name}
+                    />
+                  </div>
+                )}
+              </div>
+            </TabsContent>
           ))}
-        </TabsList>
-        {Array.isArray(categories) && categories.map((cat) => (
-          <TabsContent key={cat.name} value={cat.name} className="mt-24 md:mt-0">
-            <div className="grid gap-3 md:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {products.filter((p) => p.categoryId === cat.id).length > 0 ? (
-                products
-                  .filter((p) => p.categoryId === cat.id)
-                  .map((val, index) => {
-
-                    return (<ProductItem key={val.id || index} item={val} />)
-                  })
-              ) : (
-                <div className="flex flex-col items-center justify-center py-8 md:py-12">
-                  <ErrorHandler products={[]} title={cat.name} value={cat.name} />
-                </div>
-              )}
-            </div>
-          </TabsContent>
-        ))}
       </Tabs>
     </div>
   );

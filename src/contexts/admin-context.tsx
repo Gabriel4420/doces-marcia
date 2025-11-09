@@ -48,15 +48,16 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     testimonials,
     showTestimonialForm,
     setShowTestimonialForm,
-    testimonialImage,
-    setTestimonialImage,
-    testimonialPreview,
-    setTestimonialPreview,
+    testimonialImages,
+    setTestimonialImages,
+    testimonialPreviews,
+    setTestimonialPreviews,
     loading: loadingTestimonials,
     fetchTestimonials,
     handleTestimonialSubmit,
     handleDeleteTestimonial,
     handleTestimonialImageChange,
+    handleTestimonialDrop,
   } = useAdminTestimonials();
   const { sidebarOpen, setSidebarOpen } = useAdminSidebar();
 
@@ -103,15 +104,16 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     testimonials,
     showTestimonialForm,
     setShowTestimonialForm,
-    testimonialImage,
-    setTestimonialImage,
-    testimonialPreview,
-    setTestimonialPreview,
+    testimonialImages,
+    setTestimonialImages,
+    testimonialPreviews,
+    setTestimonialPreviews,
     loadingTestimonials,
     fetchTestimonials,
     handleTestimonialSubmit,
     handleDeleteTestimonial,
     handleTestimonialImageChange,
+    handleTestimonialDrop,
     
     // Sidebar
     sidebarOpen,
@@ -134,4 +136,4 @@ export function useAdmin() {
     throw new Error("useAdmin must be used within an AdminProvider");
   }
   return context;
-} 
+}

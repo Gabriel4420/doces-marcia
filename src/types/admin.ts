@@ -39,15 +39,16 @@ export interface AdminContextType {
   testimonials: any[];
   showTestimonialForm: boolean;
   setShowTestimonialForm: (show: boolean) => void;
-  testimonialImage: File | null;
-  setTestimonialImage: (file: File | null) => void;
-  testimonialPreview: string | null;
-  setTestimonialPreview: (url: string | null) => void;
+  testimonialImages: File[];
+  setTestimonialImages: (files: File[]) => void;
+  testimonialPreviews: string[];
+  setTestimonialPreviews: (urls: string[]) => void;
   loadingTestimonials: boolean;
   fetchTestimonials: () => Promise<void>;
   handleTestimonialSubmit: (e: any) => void;
   handleDeleteTestimonial: (id: number, imageUrl?: string) => void;
   handleTestimonialImageChange: (e: any) => void;
+  handleTestimonialDrop: (files: File[]) => void;
   
   // Sidebar
   sidebarOpen: boolean;
